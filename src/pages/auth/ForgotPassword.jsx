@@ -1,36 +1,32 @@
-// src/pages/ForgotPassword.jsx
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { forgotPassword } from '../../features/auth/AuthSlice';
+import { useForgotPasswordMutation } from '../../features/auth/authApi';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
-  const { isLoading } = useSelector((state) => state.auth);
+  const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      const result = await dispatch(forgotPassword({ email }));
+      await forgotPassword({ email }).unwrap();
 
-      if (forgotPassword.fulfilled.match(result)) {
-        navigate('/', {
-          replace: true,
-          state: { forgotPassSuccess: 'ForgotPassword link sent successful. Please check your email' }
-        });
-      } else {
-        setErrors({ general: result.payload || 'failed' });
-      }
-    } catch {
-      setErrors({ general: 'Unexpected error occurred' });
+      navigate('/', {
+        replace: true,
+        state: {
+          forgotPassSuccess:
+            'Forgot password link sent successfully. Please check your email.',
+        },
+      });
+    } catch (err) {
+      console.error('Error sending forgot password email:', err);
     }
-
-
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center px-4 sm:px-6 lg:px-8">

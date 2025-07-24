@@ -1,20 +1,19 @@
 import { useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { verifyOtp } from '../../features/auth/AuthSlice';
 import { useNavigate } from 'react-router';
+import { useVerifyOtpMutation } from '../../features/auth/authApi'; // Make sure this import is correct
 
 const OtpConfirmation = () => {
     const [otp, setOtp] = useState(new Array(6).fill(''));
     const inputsRef = useRef([]);
     const [errors, setErrors] = useState({});
-    const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const [verifyOtp, { isLoading }] = useVerifyOtpMutation();
 
     const email = localStorage.getItem('registeredEmail') || null;
 
     const handleChange = (e, index) => {
         const value = e.target.value;
-
         if (!/^[0-9]?$/.test(value)) return;
 
         const newOtp = [...otp];
@@ -56,6 +55,7 @@ const OtpConfirmation = () => {
         e.preventDefault();
         const paste = e.clipboardData.getData('text').slice(0, 6).split('');
         const newOtp = [...otp];
+
         paste.forEach((char, i) => {
             if (i < 6 && /^[0-9]$/.test(char)) {
                 newOtp[i] = char;
@@ -64,9 +64,9 @@ const OtpConfirmation = () => {
                 }
             }
         });
+
         setOtp(newOtp);
 
-        // Focus next empty box
         const firstEmptyIndex = newOtp.findIndex((digit) => !digit);
         if (firstEmptyIndex !== -1 && inputsRef.current[firstEmptyIndex]) {
             inputsRef.current[firstEmptyIndex].focus();
@@ -75,24 +75,22 @@ const OtpConfirmation = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setErrors({});
         const finalOtp = otp.join('');
+
         try {
-
-            const result = await dispatch(verifyOtp({ email, finalOtp }));
-
-            if (verifyOtp.fulfilled.match(result)) {
-                navigate('/login', {
-                    replace: true,
-                    state: { otpSuccess: 'OTP verified successfully. Please log in.' }
-                });
-            } else {
-                setErrors({ general: result.payload || 'OTP failed' });
-            }
-        } catch {
-            setErrors({ general: 'Unexpected error occurred' });
+            await verifyOtp({ email, finalOtp }).unwrap();
+            navigate('/login', {
+                replace: true,
+                state: { otpSuccess: 'OTP verified successfully. Please log in.' },
+            });
+        } catch (err) {
+            setErrors({
+                general:
+                    err?.data?.message || 'OTP verification failed. Please try again.',
+            });
         }
     };
-
 
     return (
         <div className="bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center px-4 py-12">
@@ -123,16 +121,47 @@ const OtpConfirmation = () => {
                         ))}
                     </div>
 
+                    {errors.general && (
+                        <p className="text-red-600 text-sm text-center animate-shake">{errors.general}</p>
+                    )}
+
                     <button
                         type="submit"
-                        disabled={otp.includes('')}
-                        className={`w-full py-2 px-4 rounded-xl font-semibold text-lg shadow-md transition-all duration-200
-                              ${otp.includes('')
+                        disabled={otp.includes('') || isLoading}
+                        className={`w-full py-2 px-4 rounded-xl font-semibold text-lg shadow-md transition-all duration-200 flex items-center justify-center gap-2
+                            ${otp.includes('') || isLoading
                                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg hover:scale-[1.02]'}
-  `}
+                                : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg hover:scale-[1.02]'
+                            }
+                        `}
                     >
-                        Confirm OTP
+                        {isLoading ? (
+                            <>
+                                <svg
+                                    className="animate-spin h-5 w-5 text-white"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                    ></circle>
+                                    <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                                    ></path>
+                                </svg>
+                                Verifying...
+                            </>
+                        ) : (
+                            'Confirm OTP'
+                        )}
                     </button>
                 </form>
 

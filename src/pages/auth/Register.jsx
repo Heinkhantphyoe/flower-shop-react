@@ -1,17 +1,17 @@
 // src/pages/Register.jsx
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
-import { register } from '../../features/auth/AuthSlice';
+import { useRegisterMutation } from '../../features/auth/authApi';
 
 const Register = () => {
-    const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { isLoading } = useSelector((state) => state.auth || {});
+    const [register, { isLoading }] = useRegisterMutation();
 
     const [formData, setFormData] = useState({
         name: '',
         email: '',
+        phone: '',
+        address: '',
         password: '',
         confirmPassword: ''
     });
@@ -31,6 +31,8 @@ const Register = () => {
         const newErrors = {};
         if (!formData.name) newErrors.name = 'Name is required';
         if (!formData.email) newErrors.email = 'Email is required';
+        if (!formData.phone) newErrors.phone = 'Phone number is required';
+        if (!formData.address) newErrors.address = 'Address is required';
         if (!formData.password) newErrors.password = 'Password is required';
         if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
         if (!formData.confirmPassword) newErrors.confirmPassword = 'Please confirm your password';
@@ -47,28 +49,17 @@ const Register = () => {
         if (!validateForm()) return;
 
         try {
-            const result = await dispatch(register(formData));
-
-
-            if (register.fulfilled.match(result)) {
-                localStorage.setItem('registeredEmail', formData.email);
-                navigate('/otp-confirmation', {
-                    replace: true,
-                });
-
-            } else {
-                const errorData = result.payload;
-                if (errorData?.message) {
-                    setErrors({ general: errorData.message });
-                } else {
-                    setErrors({ general: 'Registration failed' });
-                }
-            }
+            await register(formData).unwrap();
+            localStorage.setItem('registeredEmail', formData.email);
+            navigate('/otp-confirmation', { replace: true });
         } catch (err) {
-            setErrors({ general: 'Something went wrong. Try again later.' });
+            if (err?.data?.message) {
+                setErrors({ general: err.data.message });
+            } else {
+                setErrors({ general: 'Registration failed. Please try again.' });
+            }
         }
     };
-
 
 
     return (
@@ -156,6 +147,69 @@ const Register = () => {
                                         <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                                     </svg>
                                     {errors.email}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Phone Field */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                Phone Number
+                            </label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                    </svg>
+                                </div>
+                                <input
+                                    type="tel"
+                                    name="phone"
+                                    className={`block w-full pl-10 pr-3 py-2 border-2 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent ${errors.phone ? 'border-red-300 focus:ring-red-500' : 'border-gray-200 hover:border-gray-300'
+                                        }`}
+                                    placeholder="Enter your phone number"
+                                    value={formData.phone}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            {errors.phone && (
+                                <p className="mt-2 text-sm text-red-600 flex items-center">
+                                    <svg className="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                    </svg>
+                                    {errors.phone}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Address Field */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                Address
+                            </label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </div>
+                                <textarea
+                                    name="address"
+                                    rows="3"
+                                    className={`block w-full pl-10 pr-3 py-2 border-2 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent ${errors.address ? 'border-red-300 focus:ring-red-500' : 'border-gray-200 hover:border-gray-300'
+                                        }`}
+                                    placeholder="Enter your address"
+                                    value={formData.address}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            {errors.address && (
+                                <p className="mt-2 text-sm text-red-600 flex items-center">
+                                    <svg className="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                    </svg>
+                                    {errors.address}
                                 </p>
                             )}
                         </div>

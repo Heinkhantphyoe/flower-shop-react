@@ -1,32 +1,32 @@
 // src/pages/Login.jsx
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { login } from '../../features/auth/AuthSlice';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useLoginMutation } from '../../features/auth/authApi';
 import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '../../features/auth/AuthSlice';
 
 const Login = () => {
   const location = useLocation();
   const { otpSuccess, resetPassSuccess } = location.state || {};
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isLoading } = useSelector((state) => state.auth);
   const [showPassword, setShowPassword] = useState(false);
+  const [login, { isLoading }] = useLoginMutation();
 
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
     setErrors({});
   };
 
   useEffect(() => {
-
     const showToastIfExists = (message) => {
       if (message) toast.success(message);
     };
@@ -34,7 +34,7 @@ const Login = () => {
     showToastIfExists(otpSuccess);
     showToastIfExists(resetPassSuccess);
     if (otpSuccess || resetPassSuccess) {
-      navigate(location.pathname, { replace: true }); // removes toast message from history
+      navigate(location.pathname, { replace: true });
     }
   }, [otpSuccess, resetPassSuccess, navigate, location.pathname]);
 
@@ -51,17 +51,15 @@ const Login = () => {
     if (!validateForm()) return;
 
     try {
-      const resultAction = await dispatch(login(formData));
-      if (login.fulfilled.match(resultAction)) {
-        const { role } = resultAction.payload;
-        role === 'ROLE_ADMIN'
-          ? navigate('/admin', { replace: true })
-          : navigate('/', { replace: true });
-      } else {
-        setErrors({ general: resultAction.payload || 'Login failed' });
-      }
-    } catch {
-      setErrors({ general: 'Unexpected error occurred' });
+      const user = await login(formData).unwrap();
+      const { role } = user;
+      dispatch(loginSuccess(user))
+
+      role == 'ROLE_ADMIN'
+        ? navigate('/admin', { replace: true })
+        : navigate('/', { replace: true });
+    } catch (err) {
+      setErrors({ general: err?.message || 'Login failed' });
     }
   };
 
@@ -79,7 +77,7 @@ const Login = () => {
           <p className="text-gray-600">Sign in to your account</p>
         </div>
 
-        {/* Main Form Card */}
+        {/* Main Form */}
         <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow shadow-gray-400 border border-white/20 p-8">
           {errors.general && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
@@ -93,11 +91,9 @@ const Login = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email Field */}
+            {/* Email */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Email Address
-              </label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -124,11 +120,9 @@ const Login = () => {
               )}
             </div>
 
-            {/* Password Field */}
+            {/* Password */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Password
-              </label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -191,7 +185,7 @@ const Login = () => {
             </button>
           </form>
 
-          {/* Footer Links */}
+          {/* Footer */}
           <div className="mt-8 pt-6 border-t border-gray-200">
             <div className="flex flex-col sm:flex-row gap-3">
               <Link
@@ -210,7 +204,6 @@ const Login = () => {
           </div>
         </div>
 
-        {/* Additional Info */}
         <div className="text-center text-sm text-gray-600">
           <p>© 2024 Giftora. All rights reserved.</p>
         </div>

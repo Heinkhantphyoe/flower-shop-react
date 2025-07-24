@@ -15,6 +15,7 @@ import Register from '../pages/auth/Register';
 import OtpConfirmation from '../pages/auth/OtpConfirmation';
 import ResetPassword from '../pages/auth/ResetPassword';
 import CustomError from '../pages/CustomError';
+import AboutUs from '../pages/AboutUs';
 
 
 const router = createBrowserRouter([
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
         path: 'otp-confirmation',
         element: <OtpConfirmation />,
       },
+      {
+        path: "about-us",
+        element: <AboutUs />
+      }
 
     ]
   },
