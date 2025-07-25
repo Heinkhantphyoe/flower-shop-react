@@ -57,7 +57,13 @@ const Login = () => {
 
       role == 'ROLE_ADMIN'
         ? navigate('/admin', { replace: true })
-        : navigate('/', { replace: true });
+        : navigate('/', {
+          replace: true,
+          state: {
+            loginSuccess: 'Login successful. Welcome .....!',
+          },
+        }
+        );
     } catch (err) {
       setErrors({ general: err?.message || 'Login failed' });
     }
