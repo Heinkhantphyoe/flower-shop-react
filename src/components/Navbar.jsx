@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { logout } from "../features/auth/AuthSlice";
+import { logout } from "../features/auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink, Link } from "react-router-dom";
 import {  Contact, Flower, MapPin, Search, ShoppingBasketIcon, UserPen } from "lucide-react";
@@ -52,7 +52,13 @@ const NavBar = () => {
   const handleLogout = () => dispatch(logout());
 
   // Navigation items data
-  const mainNavItems = ["Flowers", "Cakes", "Gifts", "Discounts", "About Us"];
+const mainNavItems = [
+  { label: "Flowers", to: "/products?categoryId=1" },
+  { label: "Gifts", to: "/products?categoryId=2" },
+  { label: "Cakes", to: "/products?categoryId=3" },
+  { label: "Discounts", to: "/discounts" },
+  { label: "About Us", to: "/about-us" },
+];
   const secondaryNavItems = [
     { 
       name: "My Account", 
@@ -214,13 +220,13 @@ const NavBar = () => {
 
       {/* Desktop Navigation Links */}
       <div className="hidden md:flex justify-center gap-1 py-3 mt-20">
-        {mainNavItems.map((item) => (
+        {mainNavItems.map((item,index) => (
           <Link
-            key={item}
-            to={`/${item.toLowerCase().replace(' ', '-')}`}
+            key={index}
+            to={item.to}
             className="px-5 py-2 text-gray-600 hover:text-white font-medium hover:bg-gradient-to-r hover:from-pink-500 hover:to-purple-600 hover:shadow-md rounded-xl transition-all"
           >
-            {item}
+            {item.label}
           </Link>
         ))}
       </div>
@@ -250,18 +256,18 @@ const NavBar = () => {
                 {/* Main Navigation */}
                 {mainNavItems.map((item, i) => (
                   <motion.div
-                    key={item}
+                    key={i}
                     custom={i}
                     initial="hidden"
                     animate="visible"
                     variants={navItemVariants}
                   >
                     <NavLink
-                      to={`/${item.toLowerCase().replace(' ', '-')}`}
+                      to={item.to}
                       onClick={handleClose}
                       className="block text-lg px-4 py-3 rounded-xl text-gray-700 hover:text-white hover:bg-gradient-to-r hover:from-pink-500 hover:to-purple-600 transition-all"
                     >
-                      {item}
+                      {item.label}
                     </NavLink>
                   </motion.div>
                 ))}

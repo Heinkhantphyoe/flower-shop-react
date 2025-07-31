@@ -8,7 +8,7 @@ import AdminDashboard from '../pages/admin/AdminDashboard';
 import RequireAuth from './RequireAuth';
 import UserLayout from '../layouts/UserLayout';
 import AdminLayout from '../layouts/AdminLayout';
-import Products from '../pages/Products';
+import Products from '../pages/Product';
 import UserProfile from '../pages/user/UserProfile';
 import ForgotPassword from '../pages/auth/ForgotPassword';
 import Register from '../pages/auth/Register';
@@ -51,6 +51,10 @@ const router = createBrowserRouter([
       {
         path: "about-us",
         element: <AboutUs />
+      },
+      {
+        path: 'products',
+        element: <Products/>
       }
 
     ]

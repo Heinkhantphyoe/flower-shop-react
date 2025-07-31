@@ -3,7 +3,7 @@ import { Leaf, Smile, Flower2 } from 'lucide-react';
 
 const AboutUs = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-green-50 flex items-center justify-center px-4">
+    <div className="min-h-[calc(100vh-100px)] bg-gradient-to-br from-pink-50 via-purple-50 to-green-50 flex items-center justify-center px-4 mt-24 md:mt-0">
       <div className="max-w-4xl bg-white shadow-xl rounded-2xl p-8 md:p-12">
         <h1 className="text-3xl md:text-4xl font-bold text-center text-green-700 mb-6">
           About <span className="text-pink-500">GIFTORA</span>
