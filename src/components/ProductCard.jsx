@@ -1,19 +1,23 @@
 import React, { useState } from "react";
 import { Heart, ShoppingCart, Eye, Package } from "lucide-react";
+import { useOutletContext } from "react-router";
+import notFoundImage from "../.././public/uploads/not-found.avif"; 
 
 const ProductCard = ({
+  id,
   name = "Premium Wireless Headphones",
-  description = "High-quality wireless headphones with noise cancellation and 30-hour battery life.",
   price = "$299.99",
-  image = "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop",
+  image = notFoundImage,
   isNew = false,
   category = "",
   stock = 10,
   loading = false,
-  onQuickView = () => {},
+  onQuickView = () => { },
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-  
+
+  const { addToCart } = useOutletContext();
+
 
   if (loading) {
     return (
@@ -42,7 +46,7 @@ const ProductCard = ({
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-        
+
         {/* New Badge */}
         {isNew && (
           <div className="absolute top-3 left-3">
@@ -60,7 +64,8 @@ const ProductCard = ({
           >
             <Eye className="w-4 h-4" />
           </button>
-          <button 
+          <button
+            onClick={() => addToCart({ id, name, price, image, stock })}
             className="p-2 bg-white/90 rounded-full shadow-lg hover:bg-white transition-all duration-300 transform hover:scale-110 opacity-0 group-hover:opacity-100"
           >
             <ShoppingCart className="w-4 h-4" />
@@ -81,7 +86,7 @@ const ProductCard = ({
             {category}
           </span>
         )}
-        
+
         <h3 className="text-base font-bold text-gray-900 line-clamp-2 group-hover:text-violet-600 transition-colors duration-300">
           {name}
         </h3>

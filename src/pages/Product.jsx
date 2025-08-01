@@ -3,7 +3,8 @@ import Pagination from "../components/Pagination";
 import ProductCard from "../components/ProductCard";
 import { useGetProductsQuery } from "../features/product/productApi";
 import Loading from "../components/Loading";
-import { useSearchParams } from "react-router";
+import { useOutletContext, useSearchParams } from "react-router";
+import ProductDetailModal from "../components/ProductDetailModal";
 
 
 const Products = () => {
@@ -15,9 +16,18 @@ const Products = () => {
 
   const { data, error, isLoading } = useGetProductsQuery({ page: currentPage - 1, categoryId });
 
+   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const handleQuickView = (product) => {
+    setSelectedProduct(product);
+  };
+
+  const closeModal = () => setSelectedProduct(null);
 
 
-  const flowers = data?.data?.items || [];
+
+
+  const products = data?.data?.items || [];
   const totalPages = data?.data?.totalPages || 1;
 
 
@@ -36,17 +46,24 @@ const Products = () => {
   return (
     <div className="bg-pink-50 min-h-screen p-6 mt-20 md:mt-0">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto ">
-        {flowers.map((flower) => (
+        {products.map((product) => (
           <ProductCard
-            key={flower.id}
-            name={flower.name}
-            description={flower.description}
-            price={flower.price}
-            image={`/uploads/${flower.imageUrl}`}
-            onAddToCart={() => handleAddToCart(flower.name)}
+            key={product.id}
+            id={product.id}
+            name={product.name}
+            description={product.description}
+            price={product.price}
+            stock={product.stock}
+            image={`/uploads/${product.imageUrl}`}
+            onQuickView={() => handleQuickView(product)}
           />
         ))}
       </div>
+       <ProductDetailModal
+        isOpen={!!selectedProduct}
+        onClose={closeModal}
+        product={selectedProduct}
+      />
       <div>
         <Pagination
           currentPage={currentPage}

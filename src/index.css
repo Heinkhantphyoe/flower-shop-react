@@ -7,6 +7,10 @@
   }
 }
 
+.Toastify__toast-container {
+  z-index: 10001;
+}
+
 @theme {
   --color-primary: #3b82f6;
 

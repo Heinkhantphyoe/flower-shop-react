@@ -3,11 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { logout } from "../features/auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink, Link } from "react-router-dom";
-import {  Contact, Flower, MapPin, Search, ShoppingBasketIcon, UserPen } from "lucide-react";
+import { Contact, Flower, MapPin, Search, ShoppingBasketIcon, UserPen } from "lucide-react";
+import CartDrawer from "./CartDrawer";
 
 
 
-const NavBar = () => {
+const NavBar = ({ cartCount, onCartClick }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -52,43 +53,43 @@ const NavBar = () => {
   const handleLogout = () => dispatch(logout());
 
   // Navigation items data
-const mainNavItems = [
-  { label: "Flowers", to: "/products?categoryId=1" },
-  { label: "Gifts", to: "/products?categoryId=2" },
-  { label: "Cakes", to: "/products?categoryId=3" },
-  { label: "Discounts", to: "/discounts" },
-  { label: "About Us", to: "/about-us" },
-];
+  const mainNavItems = [
+    { label: "Flowers", to: "/products?categoryId=1" },
+    { label: "Gifts", to: "/products?categoryId=2" },
+    { label: "Cakes", to: "/products?categoryId=3" },
+    { label: "Discounts", to: "/discounts" },
+    { label: "About Us", to: "/about-us" },
+  ];
   const secondaryNavItems = [
-    { 
-      name: "My Account", 
-      to: "/account", 
-      icon: <UserPen/>
+    {
+      name: "My Account",
+      to: "/account",
+      icon: <UserPen />
     },
-    { 
-      name: "Contact Us", 
-      to: "/contact", 
-      icon: <Contact/>
+    {
+      name: "Contact Us",
+      to: "/contact",
+      icon: <Contact />
     }
   ];
 
   // Animation variants
   const mobileMenuVariants = {
     hidden: { opacity: 0, x: "100%" },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       x: 0,
-      transition: { 
-        type: "spring", 
+      transition: {
+        type: "spring",
         damping: 25,
         stiffness: 300
       }
     },
-    exit: { 
-      opacity: 0, 
+    exit: {
+      opacity: 0,
       x: "100%",
-      transition: { 
-        duration: 0.3 
+      transition: {
+        duration: 0.3
       }
     }
   };
@@ -106,18 +107,18 @@ const mainNavItems = [
     })
   };
 
+
   return (
     <>
       {/* Floating navbar with glassmorphism */}
-      <nav className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 ${
-        scrolled 
-          ? 'w-[95%] max-w-6xl bg-white/20 backdrop-blur-2xl border border-white/30 shadow-lg' 
-          : 'w-[98%] max-w-7xl bg-white/10 backdrop-blur-xl border border-white/20'
-      } rounded-2xl`}>
-        
+      <nav className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 ${scrolled
+        ? 'w-[95%] max-w-6xl bg-white/20 backdrop-blur-2xl border border-white/30 shadow-lg'
+        : 'w-[98%] max-w-7xl bg-white/10 backdrop-blur-xl border border-white/20'
+        } rounded-2xl`}>
+
         <div className="relative px-6 py-3">
           <div className="flex justify-between items-center">
-            
+
             {/* Location */}
             <div className="hidden sm:flex items-center gap-3 text-gray-600 group">
               <div className="p-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md">
@@ -139,7 +140,7 @@ const mainNavItems = [
 
             {/* Right side icons */}
             <div className="flex items-center space-x-3">
-              
+
               {/* Auth Button */}
               <div className="hidden sm:block">
                 {isAuthenticated ? (
@@ -159,20 +160,22 @@ const mainNavItems = [
               </div>
 
               {/* Cart Icon */}
-              <Link to="/cart" className="p-2.5 bg-white/50 backdrop-blur-sm rounded-xl border border-white/30 text-gray-700 hover:bg-gradient-to-r hover:from-pink-500 hover:to-purple-600 hover:text-white transition-all">
-                <ShoppingBasketIcon/>
+              <button
+                onClick={onCartClick}
+                className="p-2.5 bg-white/50 backdrop-blur-sm rounded-xl border border-white/30 text-gray-700 hover:bg-gradient-to-r hover:from-pink-500 hover:to-purple-600 hover:text-white transition-all">
+                <ShoppingBasketIcon />
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
-                  3
+                  {cartCount}
                 </span>
-              </Link>
-
+              </button>         
+              
               {/* Search */}
               <div className="relative" ref={searchRef}>
                 <button
                   onClick={() => setShowSearch(!showSearch)}
                   className="p-2.5 bg-white/50 backdrop-blur-sm rounded-xl border border-white/30 text-gray-700 hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-600 hover:text-white transition-all"
                 >
-                  <Search/>
+                  <Search />
                 </button>
 
                 {showSearch && (
@@ -220,7 +223,7 @@ const mainNavItems = [
 
       {/* Desktop Navigation Links */}
       <div className="hidden md:flex justify-center gap-1 py-3 mt-20">
-        {mainNavItems.map((item,index) => (
+        {mainNavItems.map((item, index) => (
           <Link
             key={index}
             to={item.to}
@@ -235,15 +238,15 @@ const mainNavItems = [
       <AnimatePresence>
         {isOpen && (
           <div className="md:hidden fixed inset-0 z-40" style={{ top: '5rem' }}>
-            <div 
-              className="absolute inset-0 bg-black/50 backdrop-blur-sm" 
+            <div
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
               onClick={handleClose}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
             />
-            
+
             <motion.div
               className="relative h-full w-4/5 ml-auto bg-white/95 backdrop-blur-xl border-l border-white/30 shadow-lg"
               initial="hidden"
@@ -252,7 +255,7 @@ const mainNavItems = [
               variants={mobileMenuVariants}
             >
               <div className="overflow-y-auto h-full pb-20 px-5 py-6 space-y-3">
-                
+
                 {/* Main Navigation */}
                 {mainNavItems.map((item, i) => (
                   <motion.div
@@ -272,7 +275,7 @@ const mainNavItems = [
                   </motion.div>
                 ))}
 
-                <motion.div 
+                <motion.div
                   className="my-4 h-px bg-gray-200"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -305,8 +308,8 @@ const mainNavItems = [
                 <motion.div
                   className="pt-4"
                   initial={{ opacity: 0, y: 20 }}
-                  animate={{ 
-                    opacity: 1, 
+                  animate={{
+                    opacity: 1,
                     y: 0,
                     transition: {
                       delay: (mainNavItems.length + secondaryNavItems.length) * 0.05 + 0.2,
