@@ -1,20 +1,54 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { X, Trash2, Minus, Plus, Link, MoveUpRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { X, Trash2, Minus, Plus, MoveUpRight } from "lucide-react";
 import { createPortal } from "react-dom";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
+import { useClearCartMutation, useRemoveCartItemMutation, useUpdateCartItemMutation } from "../features/product/cartApi";
+import { useState } from "react";
 
 const CartDrawer = ({
     isOpen,
     onClose,
     cartItems = [],
-    onUpdateQuantity,
-    onRemoveItem,
 }) => {
+
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
     const total = cartItems
         .reduce((sum, item) => sum + item.price * item.quantity, 0)
         .toFixed(2);
 
+    const [updateCartItem] = useUpdateCartItemMutation();
+    const [removeCartItem] = useRemoveCartItemMutation();
+    const [clearCart] = useClearCartMutation();
 
+    const onUpdateQuantity = async (itemId, newQuantity) => {
+        try {
+            await updateCartItem({ cartItemId: itemId, quantity: newQuantity }).unwrap();
+        } catch (error) {
+            toast.error(error?.message || 'Failed to update quantity');
+        }
+    };
+
+    const onRemoveItem = async (itemId) => {
+        try {
+            await removeCartItem({ cartItemId: itemId }).unwrap();
+            toast.success('Item removed from cart');
+        } catch (error) {
+            console.log(error);
+
+            toast.error(error?.message || 'Failed to remove item');
+        }
+    };
+
+    const onClearConfirm = async () => {
+        try {
+            await clearCart(); 
+            toast.success('All items cleared from cart');
+            onClose();
+        } catch (error) {
+            toast.error(error?.message || 'Failed to clear cart');
+        }   
+    };
 
 
 
@@ -67,12 +101,12 @@ const CartDrawer = ({
                                             return (
                                                 <li key={index} className="flex gap-4 py-4 items-center">
                                                     <img
-                                                        src={item.image}
+                                                        src={`/uploads/${item.imageUrl}`}
                                                         alt={item.name}
                                                         className="w-16 h-16 object-cover rounded-lg border border-rose-200 shadow-sm"
                                                     />
                                                     <div className="flex-1">
-                                                        <p className="font-medium text-gray-700">{item.name}</p>
+                                                        <p className="font-medium text-gray-700">{item.productName}</p>
                                                         <p className="text-sm text-gray-500">
                                                             ${item.price} × {item.quantity}
                                                         </p>
@@ -129,12 +163,51 @@ const CartDrawer = ({
                                             <span>Total</span>
                                             <span>${total}</span>
                                         </div>
-                                        <button className="group w-full relative flex items-center justify-center gap-2  py-2 rounded-2xl bg-gradient-to-r from-pink-400 via-rose-400 to-fuchsia-500 text-white font-semibold shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300">
-                                            <span className="absolute -inset-0.5 rounded-2xl blur opacity-20 group-hover:opacity-40 bg-gradient-to-r from-pink-400 via-rose-400 to-fuchsia-500"></span>
-                                            <span className="relative z-10"> Proceed to Checkout</span>
-                                            <MoveUpRight />
-                                        </button>
 
+                                        <div className="flex w-full gap-3">
+
+                                            <button onClick={() => setIsDeleteModalOpen(true)} className="flex-[2] group relative flex items-center justify-center gap-2 py-2 rounded-2xl bg-gradient-to-r from-red-500 via-rose-500 to-pink-600 text-white font-semibold shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300">
+                                                <span className="absolute -inset-0.5 rounded-2xl blur opacity-20 group-hover:opacity-40 bg-gradient-to-r from-red-500 via-rose-500 to-pink-600"></span>
+                                                <Trash2 className="relative z-10 w-5 h-5" />
+                                                <span className="relative z-10">Clear All Cart</span>
+                                            </button>
+
+                                            {isDeleteModalOpen && (
+                                                <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-50">
+                                                    <div className="bg-white rounded-2xl p-6 shadow-xl w-80 text-center">
+                                                        <h2 className="text-lg font-semibold mb-4">
+                                                            Are you sure to clear all items in your cart?
+                                                        </h2>
+                                                        <div className="flex gap-3 justify-center">
+                                                            <button
+                                                                onClick={() => {
+                                                                    onClearConfirm(); 
+                                                                    setIsDeleteModalOpen(false);
+                                                                }}
+                                                                className="px-4 py-2 rounded-xl bg-red-500 text-white font-semibold hover:bg-red-600 transition"
+                                                            >
+                                                                Yes, Clear
+                                                            </button>
+                                                            <button
+                                                                onClick={() => setIsDeleteModalOpen(false)}
+                                                                className="px-4 py-2 rounded-xl bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition"
+                                                            >
+                                                                Cancel
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+
+
+                                            <button className="flex-[3] group relative flex items-center justify-center gap-2 py-2 rounded-2xl bg-gradient-to-r from-pink-400 via-rose-400 to-fuchsia-500 text-white font-semibold shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                                                <span className="absolute -inset-0.5 rounded-2xl blur opacity-20 group-hover:opacity-40 bg-gradient-to-r from-pink-400 via-rose-400 to-fuchsia-500"></span>
+                                                <span className="relative z-10">Proceed to Checkout</span>
+                                                <MoveUpRight className="relative z-10" />
+                                            </button>
+
+
+                                        </div>
                                     </div>
                                 )}
                         </div>

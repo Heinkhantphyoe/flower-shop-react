@@ -4,7 +4,6 @@ import { logout } from "../features/auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink, Link } from "react-router-dom";
 import { Contact, Flower, MapPin, Search, ShoppingBasketIcon, UserPen } from "lucide-react";
-import CartDrawer from "./CartDrawer";
 
 
 
