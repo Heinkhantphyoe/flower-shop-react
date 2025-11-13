@@ -4,6 +4,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import {
   useResetPasswordMutation,
   useVerifyOtpMutation,
+  useVerifyResetTokenMutation,
 } from '../../features/auth/authApi';
 
 const ResetPassword = () => {
@@ -13,7 +14,7 @@ const ResetPassword = () => {
   const navigate = useNavigate();
 
   const [resetPassword, { isLoading }] = useResetPasswordMutation();
-  const [verifyResetToken] = useVerifyOtpMutation();
+  const [verifyResetToken] = useVerifyResetTokenMutation();
 
   const [isTokenValid, setIsTokenValid] = useState(null);
   const [password, setPassword] = useState('');
@@ -22,7 +23,7 @@ const ResetPassword = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState({});
 
-  // Step 1: Verify Token on Mount
+  //Verify Token on Mount
   useEffect(() => {
     const verifyToken = async () => {
       try {
