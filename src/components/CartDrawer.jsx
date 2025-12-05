@@ -35,8 +35,9 @@ const CartDrawer = ({
     const [paymentPreview, setPaymentPreview] = useState(null);
 
     const onUpdateQuantity = async (itemId, newQuantity) => {
+        if(newQuantity < 1) onRemoveItem(itemId);
         try {
-            await updateCartItem({ cartItemId: itemId, quantity: newQuantity }).unwrap();
+            await updateCartItem({ productId: itemId, quantity: newQuantity }).unwrap();
         } catch (error) {
             toast.error(error?.message || 'Failed to update quantity');
         }
@@ -49,7 +50,7 @@ const CartDrawer = ({
 
     const onRemoveItem = async (itemId) => {
         try {
-            await removeCartItem({ cartItemId: itemId }).unwrap();
+            await removeCartItem({ productId: itemId }).unwrap();
             toast.success('Item removed from cart');
         } catch (error) {
             console.log(error);
@@ -175,7 +176,7 @@ const CartDrawer = ({
                                             return (
                                                 <li key={index} className="flex gap-4 py-4 items-center">
                                                     <img
-                                                        src={`/uploads/${item.imageUrl}`}
+                                                        src={item.imageUrl}
                                                         alt={item.name}
                                                         className="w-16 h-16 object-cover rounded-lg border border-rose-200 shadow-sm"
                                                     />
@@ -190,7 +191,7 @@ const CartDrawer = ({
                                                             <button
                                                                 onClick={() =>
 
-                                                                    onUpdateQuantity(item.id, item.quantity - 1)
+                                                                    onUpdateQuantity(item.productId, item.quantity - 1)
                                                                 }
                                                                 className="p-1.5 bg-rose-100 hover:bg-rose-200 rounded-full"
                                                             >
@@ -202,7 +203,7 @@ const CartDrawer = ({
                                                             <button
                                                                 onClick={() => {
                                                                     if (!outOfStock) {
-                                                                        onUpdateQuantity(item.id, item.quantity + 1)
+                                                                        onUpdateQuantity(item.productId, item.quantity + 1)
                                                                     } else {
                                                                         toast.warn("Cannot add more than available stock");
                                                                     }
@@ -215,7 +216,7 @@ const CartDrawer = ({
 
                                                     {/* Remove Button */}
                                                     <button
-                                                        onClick={() => onRemoveItem(item.id)}
+                                                        onClick={() => onRemoveItem(item.productId)}
                                                         className="text-rose-400 hover:text-rose-600 p-2"
                                                         title="Remove"
                                                     >
@@ -414,7 +415,7 @@ const CartDrawer = ({
                                                 {cartItems.map((item, index) => (
                                                     <div key={index} className="flex gap-3 py-2">
                                                         <img
-                                                            src={`/uploads/${item.imageUrl}`}
+                                                            src={item.imageUrl}
                                                             alt={item.name}
                                                             className="w-12 h-12 object-cover rounded-lg"
                                                         />

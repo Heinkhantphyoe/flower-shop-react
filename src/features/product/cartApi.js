@@ -22,30 +22,29 @@ export const cartApi = createApi({
 
         //Add product to cart
         addToCart: builder.mutation({
-            query: ({ productId, quantity }) => ({
+            query: ({ productId, quantity,productName,price,imageUrl }) => ({
                 url: `carts/add`,
                 method: 'POST',
-                params: { productId, quantity },
+                body: { productId, quantity,productName,price,imageUrl },
             }),
             invalidatesTags: ['Cart'],
         }),
 
         // Update cart item quantity
         updateCartItem: builder.mutation({
-            query: ({ cartItemId, quantity }) => ({
+            query: ({ productId, quantity }) => ({
                 url: `carts/update`,
                 method: 'PUT',
-                params: { cartItemId, quantity },
+                params: { productId, quantity },
             }),
             invalidatesTags: ['Cart'],
         }),
 
         // Remove item from cart
         removeCartItem: builder.mutation({
-            query: ({ cartItemId }) => ({
-                url: `carts/remove`,
+            query: ({ productId }) => ({
+                url: `carts/remove/${productId}`,
                 method: 'DELETE',
-                params: { cartItemId },
             }),
             invalidatesTags: ['Cart'],
         }),

@@ -14,11 +14,7 @@ const UserLayout = () => {
   const { data: cartData, isLoading } = useGetCartQuery(undefined, {
     skip: !isAuthenticated, // Do not fetch if user not logged in
   });
-
-  console.log('Cart Data:', cartData);
-  
-
-  
+ 
 
   const addToCart = useCallback(
     async (product) => {
@@ -26,9 +22,15 @@ const UserLayout = () => {
         toast.info('Please log in to add items to your cart');
         return;
       }
-
+      console.log('Adding to cart:', product);
       try {
-        await addToCartApi({ productId: product.id, quantity: 1 }).unwrap();
+        await addToCartApi({ 
+          productId: product.id, 
+          quantity: 1,
+          productName: product.name,
+          price: product.price,
+          imageUrl: product.image,
+        }).unwrap();
         toast.success(`${product.name} added to cart`);
       } catch (error) {
         toast.error(error?.data?.message || 'Failed to add to cart');
