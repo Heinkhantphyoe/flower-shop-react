@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { logout } from "../features/auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink, Link } from "react-router-dom";
-import { Contact, Flower, MapPin, Search, ShoppingBasketIcon, UserPen } from "lucide-react";
+import { CarrotIcon, CircleUser, Contact, Flower, LogOut, MapPin, Search, ShoppingBasketIcon, User, UserPen } from "lucide-react";
 
 
 
@@ -15,6 +15,9 @@ const NavBar = ({ cartCount, onCartClick }) => {
   const searchRef = useRef(null);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const dispatch = useDispatch();
+  const [openUserProfile, setOpenUserProfile] = useState(false);
+  const profileDropdownRef = useRef(null);
+
 
   // Handle scroll effect
   useEffect(() => {
@@ -33,6 +36,22 @@ const NavBar = ({ cartCount, onCartClick }) => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  //close profile dropdown when clicking outside
+  useEffect(() => {
+  const handleClickOutside = (e) => {
+    if (profileDropdownRef.current && !profileDropdownRef.current.contains(e.target)) {
+      setOpenUserProfile(false);
+    }
+  };
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+}, []);
+
+useEffect(() => {
+  setOpenUserProfile(false);
+}, [isAuthenticated]);
+
 
   // Handle body overflow when menu is open
   useEffect(() => {
@@ -139,37 +158,19 @@ const NavBar = ({ cartCount, onCartClick }) => {
 
             {/* Right side icons */}
             <div className="flex items-center space-x-3">
-
-              {/* Auth Button */}
-              <div className="hidden sm:block">
-                {isAuthenticated ? (
-                  <button
-                    onClick={handleLogout}
-                    className="px-5 py-2 bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-xl font-medium shadow-md hover:shadow-lg transition-all"
-                  >
-                    Logout
-                  </button>
-                ) : (
-                  <Link to="/login">
-                    <button className="px-5 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-medium shadow-md hover:shadow-lg transition-all">
-                      Join Us
-                    </button>
-                  </Link>
-                )}
-              </div>
-
               {/* Cart Icon */}
               {isAuthenticated && (
                 <button
-                onClick={onCartClick}
-                className="p-2.5 bg-white/50 backdrop-blur-sm rounded-xl border border-white/30 text-gray-700 hover:bg-gradient-to-r hover:from-pink-500 hover:to-purple-600 hover:text-white transition-all">
-                <ShoppingBasketIcon />
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
-                  {cartCount}
-                </span>
-              </button>
-              )}         
-              
+                  onClick={onCartClick}
+                  className="p-2.5 bg-white/50 backdrop-blur-sm rounded-xl border border-white/30 text-gray-700 hover:bg-gradient-to-r hover:from-pink-500 hover:to-purple-600 hover:text-white transition-all">
+                  <ShoppingBasketIcon />
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                    {cartCount}
+                  </span>
+                </button>
+              )}
+
+
               {/* Search */}
               <div className="relative" ref={searchRef}>
                 <button
@@ -178,6 +179,8 @@ const NavBar = ({ cartCount, onCartClick }) => {
                 >
                   <Search />
                 </button>
+
+
 
                 {showSearch && (
                   <div className="absolute right-0 top-full mt-2 w-80 z-50 animate-in slide-in-from-top-2">
@@ -200,6 +203,51 @@ const NavBar = ({ cartCount, onCartClick }) => {
                       </div>
                     </div>
                   </div>
+                )}
+              </div>
+              {/* Auth Button */}
+              <div className="hidden sm:block">
+                {isAuthenticated ? (
+                  <div className="relative">
+                    {/* Avatar Button */}
+                    <button
+                      onClick={() => setOpenUserProfile(!openUserProfile)}
+                      className="flex items-center justify-center w-11 h-11 rounded-full bg-gray-100 hover:bg-gray-200 transition-all shadow-sm"
+                    >
+                      <CircleUser className="text-gray-700" size={26} />
+                    </button>
+
+                    {/* Dropdown Menu */}
+                    {openUserProfile && (
+                      <div
+                        ref={profileDropdownRef}
+                        className="absolute right-0 mt-3 w-48 bg-white backdrop-blur-xl border border-gray-200 rounded-xl shadow-xl p-2 animate-fade-up z-50"
+                      >
+                        <Link
+                          to="/profile"
+                          className="flex items-center gap-2 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition"
+                        >
+                          <User size={18} />
+                          <span>Profile</span>
+                        </Link>
+
+                        <button
+                          onClick={handleLogout}
+                          className="flex items-center gap-2 w-full text-left px-3 py-2 text-red-600 rounded-lg hover:bg-red-50 transition"
+                        >
+                          <LogOut size={18} />
+                          <span>Logout</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                ) : (
+                  <Link to="/login">
+                    <button className="px-5 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-medium shadow-md hover:shadow-lg transition-all">
+                      Join Us
+                    </button>
+                  </Link>
                 )}
               </div>
 

@@ -66,7 +66,7 @@ const ProductCard = ({
             <Eye className="w-4 h-4" />
           </button>
           <button
-            onClick={() => addToCart({ id, name, price, image, stock })}
+            onClick={(e) => {e.stopPropagation(); addToCart({ id, name, price, image, stock })}}
             className="p-2 bg-white/90 rounded-full shadow-lg hover:bg-white transition-all duration-300 transform hover:scale-110 opacity-0 group-hover:opacity-100"
           >
             <ShoppingCart className="w-4 h-4" />
