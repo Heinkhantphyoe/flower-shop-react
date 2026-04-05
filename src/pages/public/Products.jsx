@@ -1,10 +1,10 @@
 import { useState } from "react";
-import Pagination from "../components/Pagination";
-import ProductCard from "../components/ProductCard";
-import { useGetProductsQuery } from "../features/product/productApi";
-import Loading from "../components/Loading";
+import Pagination from "../../components/Pagination";
+import ProductCard from "../../components/ProductCard";
+import { useGetProductsQuery } from "../../api/productApi";
+import Loading from "../../components/Loading";
 import { useOutletContext, useSearchParams } from "react-router";
-import ProductDetailModal from "../components/ProductDetailModal";
+import ProductDetailModal from "../../components/ProductDetailModal";
 
 
 const Products = () => {

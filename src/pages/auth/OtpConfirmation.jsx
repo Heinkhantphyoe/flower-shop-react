@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { useVerifyOtpMutation } from '../../features/auth/authApi'; // Make sure this import is correct
+import { useVerifyOtpMutation } from '../../api/authApi'; // Make sure this import is correct
 
 const OtpConfirmation = () => {
     const [otp, setOtp] = useState(new Array(6).fill(''));

@@ -3,19 +3,19 @@ import {
   RouterProvider,
 } from 'react-router-dom';
 import Login from '../pages/auth/Login';
-import Home from '../pages/Home';
+import Home from '../pages/public/Home';
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import RequireAuth from './RequireAuth';
 import UserLayout from '../layouts/UserLayout';
 import AdminLayout from '../layouts/AdminLayout';
-import Products from '../pages/Product';
+import Products from '../pages/public/Products';
 import UserProfile from '../pages/user/UserProfile';
 import ForgotPassword from '../pages/auth/ForgotPassword';
 import Register from '../pages/auth/Register';
 import OtpConfirmation from '../pages/auth/OtpConfirmation';
 import ResetPassword from '../pages/auth/ResetPassword';
-import CustomError from '../pages/CustomError';
-import AboutUs from '../pages/AboutUs';
+import CustomError from '../pages/public/CustomError';
+import AboutUs from '../pages/public/AboutUs';
 
 
 const router = createBrowserRouter([

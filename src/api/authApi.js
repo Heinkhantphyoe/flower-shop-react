@@ -1,10 +1,9 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
+import { baseQueryWithReauth } from './baseQuery';
 
 export const authApi = createApi({
   reducerPath: 'authApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl:  import.meta.env.VITE_API_BASE_URL, 
-  }),
+  baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
     login: builder.mutation({
       query: ({ email, password }) => ({
@@ -13,13 +12,14 @@ export const authApi = createApi({
         body: { email, password },
       }),
       transformResponse: (response, meta, arg) => {
-        if (response.success && response.data.token) {
+        if (response.success && response.data.accessToken) {
           const user = {
-            token: response.data.token,
+            token: response.data.accessToken,
+            refreshToken: response.data.refreshToken,
             role: response.data.role,
             email: arg.email,
             isAuthenticated: true,
-          };     
+          };
           return user;
         } else {
           throw new Error(response.message || 'Login failed');

@@ -3,9 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Flower2, Star, ArrowRight } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import  bg1  from "../assets/images/bg1.avif"
-import  bg2  from "../assets/images/bg2.avif"
-import  bg3  from "../assets/images/bg3.jpg"
+import  bg1  from "../../assets/images/bg1.avif"
+import  bg2  from "../../assets/images/bg2.avif"
+import  bg3  from "../../assets/images/bg3.jpg"
 
 
 const Home = () => {

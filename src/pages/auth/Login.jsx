@@ -1,10 +1,10 @@
 // src/pages/Login.jsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { useLoginMutation } from '../../features/auth/authApi';
+import { useLoginMutation } from '../../api/authApi';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
-import { loginSuccess } from '../../features/auth/authSlice';
+import { loginSuccess } from '../../redux/authSlice';
 
 const Login = () => {
   const location = useLocation();

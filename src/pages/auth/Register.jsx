@@ -1,7 +1,7 @@
 // src/pages/Register.jsx
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useRegisterMutation } from '../../features/auth/authApi';
+import { useRegisterMutation } from '../../api/authApi';
 
 const Register = () => {
     const navigate = useNavigate();

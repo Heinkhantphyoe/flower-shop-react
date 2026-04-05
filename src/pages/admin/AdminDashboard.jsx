@@ -8,7 +8,7 @@ import Analytic from "./Analytic";
 import Category from "./Category";
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDispatch } from "react-redux";
-import { logout } from "../../features/auth/authSlice";
+import { logout } from "../../redux/authSlice";
 
 // --- Page Components Mapping (for cleaner rendering) ---
 const pages = {

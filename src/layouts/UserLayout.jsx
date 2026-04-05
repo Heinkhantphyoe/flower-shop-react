@@ -4,7 +4,7 @@ import Navbar from '../components/Navbar';
 import CartDrawer from '../components/CartDrawer';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
-import { useGetCartQuery, useAddToCartMutation } from '../features/product/cartApi';
+import { useGetCartQuery, useAddToCartMutation } from '../api/cartApi';
 
 const UserLayout = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);

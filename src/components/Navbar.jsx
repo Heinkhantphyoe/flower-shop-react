@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { logout } from "../features/auth/authSlice";
+import { logout } from "../redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink, Link } from "react-router-dom";
 import { CarrotIcon, CircleUser, Contact, Flower, LogOut, MapPin, Search, ShoppingBasketIcon, User, UserPen } from "lucide-react";
@@ -224,7 +224,7 @@ useEffect(() => {
                         className="absolute right-0 mt-3 w-48 bg-white backdrop-blur-xl border border-gray-200 rounded-xl shadow-xl p-2 animate-fade-up z-50"
                       >
                         <Link
-                          to="/profile"
+                          to="/user/profile"
                           className="flex items-center gap-2 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition"
                         >
                           <User size={18} />

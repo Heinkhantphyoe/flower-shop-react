@@ -10,7 +10,7 @@ const AboutUs = () => {
         </h1>
 
         <p className="text-gray-600 text-center mb-6">
-          At <strong>Giftora</strong>, we believe flowers aren’t just plants—they’re messages.
+          At <strong>Giftora</strong>, we believe flowers aren't just plants—they're messages.
           Whether it's love, joy, sympathy, or celebration, our blooms speak from the heart.
         </p>
 
@@ -27,7 +27,7 @@ const AboutUs = () => {
             <Smile className="text-yellow-500 w-10 h-10 mb-3" />
             <h3 className="text-lg font-semibold text-green-700">Customer First</h3>
             <p className="text-sm text-gray-600">
-              We’re committed to making your floral experience delightful, from order to doorstep.
+              We're committed to making your floral experience delightful, from order to doorstep.
             </p>
           </div>
 
@@ -42,7 +42,7 @@ const AboutUs = () => {
 
         <div className="mt-10 text-center">
           <p className="text-gray-600">
-            From birthday blooms to wedding florals, we’re here to make your special moments unforgettable.
+            From birthday blooms to wedding florals, we're here to make your special moments unforgettable.
           </p>
           <p className="text-pink-500 font-semibold mt-2">
             Thank you for choosing Giftora.

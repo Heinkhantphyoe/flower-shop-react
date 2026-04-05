@@ -5,7 +5,7 @@ import {
   useResetPasswordMutation,
   useVerifyOtpMutation,
   useVerifyResetTokenMutation,
-} from '../../features/auth/authApi';
+} from '../../api/authApi';
 
 const ResetPassword = () => {
   const location = useLocation();

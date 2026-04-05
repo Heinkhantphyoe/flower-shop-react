@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
 import { X, Trash2, Minus, Plus, MoveUpRight } from "lucide-react";
 import { toast } from "react-toastify";
-import { useClearCartMutation, useRemoveCartItemMutation, useUpdateCartItemMutation } from "../features/product/cartApi";
+import { useClearCartMutation, useRemoveCartItemMutation, useUpdateCartItemMutation } from "../api/cartApi";
 import { useState } from "react";
-import { useCreateOrderMutation } from "../features/order/orderApi";
+import { useCreateOrderMutation } from "../api/orderApi";
 
 const CartDrawer = ({
     isOpen,
