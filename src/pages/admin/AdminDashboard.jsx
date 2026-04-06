@@ -71,7 +71,7 @@ export default function AdminDashboard() {
                 <div className="h-[73px] flex items-center justify-center border-b border-slate-200">
                     <div className="flex items-center gap-3">
                         <Flower className="text-pink-600" size={sidebarOpen ? 32 : 28} />
-                        {sidebarOpen && <h1 className="text-xl font-bold text-slate-800">BlossomAdmin</h1>}
+                        {sidebarOpen && <h1 className="text-xl font-bold text-slate-800">Admin Dashboard</h1>}
                     </div>
                 </div>
                 
