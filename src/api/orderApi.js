@@ -7,7 +7,10 @@ export const orderApi = createApi({
   tagTypes: ['Order'],
   endpoints: (builder) => ({
     getOrders: builder.query({
-      query: () => 'orders',
+      query: (params) => ({
+        url: 'orders',
+        params,
+      }),
       providesTags: ['Order'],
     }),
     getOrder: builder.query({
@@ -29,6 +32,14 @@ export const orderApi = createApi({
       }),
       invalidatesTags: ['Order'],
     }),
+    updateOrderStatus: builder.mutation({
+      query: ({ orderId, orderStatus }) => ({
+        url: `orders/${orderId}/status`,
+        method: 'PUT',
+        body: { orderStatus },
+      }),
+      invalidatesTags: ['Order'],
+    }),
   }),
 });
 
@@ -37,4 +48,5 @@ export const {
   useGetOrderQuery,
   useCreateOrderMutation,
   useCancelOrderMutation,
+  useUpdateOrderStatusMutation,
 } = orderApi;
