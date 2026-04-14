@@ -4,6 +4,7 @@ import { baseQueryWithReauth } from './baseQuery';
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: baseQueryWithReauth,
+  tagTypes: ['User'],
   endpoints: (builder) => ({
     login: builder.mutation({
       query: ({ email, password }) => ({
@@ -61,6 +62,21 @@ export const authApi = createApi({
         body: { token, newPassword },
       }),
     }),
+    getMe: builder.query({
+      query: () => ({
+        url: '/users/me',
+        method: 'GET',
+      }),
+      providesTags: ['User'],
+    }),
+    updateMe: builder.mutation({
+      query: (data) => ({
+        url: '/users/me',
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['User'],
+    }),
   }),
 });
 
@@ -71,4 +87,6 @@ export const {
   useForgotPasswordMutation,
   useVerifyResetTokenMutation,
   useResetPasswordMutation,
+  useGetMeQuery,
+  useUpdateMeMutation,
 } = authApi;
