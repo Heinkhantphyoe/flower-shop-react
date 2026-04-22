@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { logout } from "../redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink, Link } from "react-router-dom";
-import { CarrotIcon, CircleUser, Contact, Flower, LogOut, MapPin, Search, ShoppingBasketIcon, User, UserPen } from "lucide-react";
+import { CarrotIcon, CircleUser, Contact, Flower, Heart, LogOut, MapPin, Search, ShoppingBasketIcon, User, UserPen } from "lucide-react";
 
 
 
@@ -85,6 +85,11 @@ useEffect(() => {
       icon: <UserPen />
     },
     {
+      name: "Wishlists",
+      to: "/wishlists",
+      icon: <Heart />
+    },
+    {
       name: "Contact Us",
       to: "/contact",
       icon: <Contact />
@@ -158,6 +163,14 @@ useEffect(() => {
 
             {/* Right side icons */}
             <div className="flex items-center space-x-3">
+              {/* Wishlist Icon */}
+              {isAuthenticated && (
+                <Link
+                  to="/wishlists"
+                  className="p-2.5 bg-white/50 backdrop-blur-sm rounded-xl border border-white/30 text-gray-700 hover:bg-gradient-to-r hover:from-pink-500 hover:to-purple-600 hover:text-white transition-all">
+                  <Heart />
+                </Link>
+              )}
               {/* Cart Icon */}
               {isAuthenticated && (
                 <button

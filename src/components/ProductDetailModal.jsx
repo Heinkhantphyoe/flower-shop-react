@@ -4,10 +4,14 @@ import {
   X,
   Star,
   ShoppingCart,
-  CreditCard,
+  Heart,
   MessageCircleMore,
+  Loader2
 } from "lucide-react";
 import { useOutletContext } from "react-router";
+import { useToggleWishlistMutation, useCheckIsWishlistedQuery } from "../api/wishlistApi";
+import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 
 const backdropVariants = {
   hidden: { opacity: 0 },
@@ -21,9 +25,34 @@ const modalVariants = {
 };
 
 const ProductDetailModal = ({ isOpen, onClose, product }) => {
+  const { addToCart } = useOutletContext();
+  const [toggleWishlist, { isLoading: isWishlisting }] = useToggleWishlistMutation();
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  
+  // Use skip so we don't spam endpoints if there's no auth/product
+  const { data: wishlistData } = useCheckIsWishlistedQuery(product?.id, { 
+    skip: !product?.id || !isAuthenticated 
+  });
+
   if (!product) return null;
 
-  const { addToCart } = useOutletContext();
+  const isWishlisted = wishlistData?.isInWishlist || wishlistData?.data?.isInWishlist || false;
+
+  const handleToggleWishlist = async () => {
+    if (!isAuthenticated) {
+      toast.info("Please log in to add items to your wishlist");
+      return;
+    }
+    
+    try {
+      const response = await toggleWishlist(product.id).unwrap();
+      // Usually returns a message like "Added to wishlist" or "Removed from wishlist"
+      toast.success(response.message || "Wishlist updated");
+    } catch (err) {
+      console.error("Failed to toggle wishlist", err);
+      toast.error(err?.data?.message || "Failed to update wishlist");
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -117,9 +146,21 @@ const ProductDetailModal = ({ isOpen, onClose, product }) => {
                   <ShoppingCart className="w-5 h-5" />
                   Add to Cart
                 </button>
-                <button className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-2xl text-violet-700 border border-violet-600 font-semibold hover:bg-violet-50 hover:scale-[1.02] active:scale-95 transition-all shadow-md">
-                  <CreditCard className="w-5 h-5" />
-                  Buy Now
+                <button 
+                  onClick={handleToggleWishlist}
+                  disabled={isWishlisting}
+                  className={`inline-flex items-center justify-center gap-2 px-4 py-2 rounded-2xl border font-semibold hover:scale-[1.02] active:scale-95 transition-all shadow-md disabled:opacity-50 ${
+                    isWishlisted 
+                      ? "text-pink-600 border-pink-500 bg-pink-50 hover:bg-pink-100" 
+                      : "text-violet-700 border-violet-600 hover:bg-violet-50"
+                  }`}
+                >
+                  {isWishlisting ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Heart className="w-5 h-5" fill={isWishlisted ? "currentColor" : "none"} />
+                  )}
+                  {isWishlisted ? "Wishlisted" : "Add to Wishlist"}
                 </button>
               </div>
             </div>

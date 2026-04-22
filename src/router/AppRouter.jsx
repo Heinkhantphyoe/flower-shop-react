@@ -16,6 +16,7 @@ import OtpConfirmation from '../pages/auth/OtpConfirmation';
 import ResetPassword from '../pages/auth/ResetPassword';
 import CustomError from '../pages/public/CustomError';
 import AboutUs from '../pages/public/AboutUs';
+import Wishlists from '../pages/user/Wishlists';
 
 
 const router = createBrowserRouter([
@@ -72,23 +73,23 @@ const router = createBrowserRouter([
     element: <RequireAuth allowedRoles={['ROLE_USER']} />,
     children: [
       {
-        path: '/user',
+        path: '/',
         element: <UserLayout />,
         children: [
           {
-            path: 'profile',
+            path: 'user/profile',
             element: <UserProfile />,
           },
+          {
+            path: 'wishlists',
+            element: <Wishlists />
+          },
           // {
-          //   path: 'orders',
+          //   path: 'user/orders',
           //   element: <UserOrders />,
           // },
           // {
-          //   path: 'wishlist',
-          //   element: <Wishlist />,
-          // },
-          // {
-          //   path: 'cart',
+          //   path: 'user/cart',
           //   element: <Cart />,
           // },
         ],

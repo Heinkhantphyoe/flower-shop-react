@@ -5,6 +5,7 @@ import { productApi } from '../api/productApi';
 import { cartApi } from '../api/cartApi';
 import { orderApi } from '../api/orderApi';
 import { categoryApi } from '../api/categoryApi';
+import { wishlistApi } from '../api/wishlistApi';
 
 const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ const store = configureStore({
     [cartApi.reducerPath]: cartApi.reducer,
     [orderApi.reducerPath]: orderApi.reducer,
     [categoryApi.reducerPath]: categoryApi.reducer,
+    [wishlistApi.reducerPath]: wishlistApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -21,7 +23,8 @@ const store = configureStore({
       .concat(productApi.middleware)
       .concat(cartApi.middleware)
       .concat(orderApi.middleware)
-      .concat(categoryApi.middleware),
+      .concat(categoryApi.middleware)
+      .concat(wishlistApi.middleware),
 });
 
 export default store;
