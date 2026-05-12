@@ -39,6 +39,14 @@ export const orderApi = createApi({
         body: { orderStatus },
       }),
       invalidatesTags: ['Order'],
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          // Invalidate Analytics cache from this separate Api slice
+          const { analyticApi } = await import('./analyticApi');
+          dispatch(analyticApi.util.invalidateTags(['Analytics']));
+        } catch {}
+      }
     }),
   }),
 });
