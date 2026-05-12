@@ -13,7 +13,14 @@ export const analyticApi = createApi({
       }),
       providesTags: ['Analytics'],
     }),
+    getCustomers: builder.query({
+      query: (params) => ({
+        url: 'admin/analytics/customers',
+        params, // keyword, page, size (or limit)
+      }),
+      providesTags: ['Analytics'],
+    }),
   }),
 });
 
-export const { useGetAnalyticsSummaryQuery } = analyticApi;
+export const { useGetAnalyticsSummaryQuery, useGetCustomersQuery } = analyticApi;
