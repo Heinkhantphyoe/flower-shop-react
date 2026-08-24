@@ -102,17 +102,20 @@ const Home = () => {
 
             <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link
-                to="/shop"
+                to="/products"
                 className="group relative inline-flex items-center px-8 py-3 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white rounded-full shadow-2xl hover:shadow-pink-500/25 transition-all duration-300 text-lg font-semibold"
               >
-                Shop Collection
+                Our Products
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
 
-              <button className="group inline-flex items-center px-8 py-3 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-full hover:bg-white/20 transition-all duration-300 text-lg font-medium">
+              <Link
+                to="/about-us"
+                className="group inline-flex items-center px-8 py-3 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-full hover:bg-white/20 transition-all duration-300 text-lg font-medium"
+              >
                 <Flower2 className="mr-2 w-5 h-5 group-hover:rotate-12 transition-transform" />
-                Learn More
-              </button>
+                About Us
+              </Link>
             </div>
           </motion.div>
         </div>

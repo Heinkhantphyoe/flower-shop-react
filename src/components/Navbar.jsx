@@ -3,16 +3,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { logout } from "../redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink, Link } from "react-router-dom";
-import { CarrotIcon, CircleUser, Contact, Flower, Heart, LogOut, MapPin, Search, ShoppingBasketIcon, User, UserPen } from "lucide-react";
+import { CircleUser, Contact, Flower, Heart, Info, LogOut, MapPin, ShoppingBasketIcon, User, UserPen } from "lucide-react";
 
 
 
 const NavBar = ({ cartCount, onCartClick }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [showSearch, setShowSearch] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const searchRef = useRef(null);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const dispatch = useDispatch();
   const [openUserProfile, setOpenUserProfile] = useState(false);
@@ -24,17 +21,6 @@ const NavBar = ({ cartCount, onCartClick }) => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Close search when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (searchRef.current && !searchRef.current.contains(event.target)) {
-        setShowSearch(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   //close profile dropdown when clicking outside
@@ -61,32 +47,24 @@ useEffect(() => {
 
   const handleClose = () => setIsOpen(false);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    console.log("Searching for:", searchQuery);
-    setSearchQuery("");
-    setShowSearch(false);
-  };
-
   const handleLogout = () => dispatch(logout());
 
   // Navigation items data
-  const mainNavItems = [
-    { label: "Flowers", to: "/products?categoryId=1" },
-    { label: "Gifts", to: "/products?categoryId=2" },
-    { label: "Cakes", to: "/products?categoryId=3" },
-    { label: "About Us", to: "/about-us" },
-  ];
   const secondaryNavItems = [
     {
       name: "My Account",
-      to: "/account",
+      to: "/user/profile",
       icon: <UserPen />
     },
     {
       name: "Wishlists",
       to: "/wishlists",
       icon: <Heart />
+    },
+    {
+      name: "About Us",
+      to: "/about-us",
+      icon: <Info />
     },
     {
       name: "Contact Us",
@@ -183,40 +161,6 @@ useEffect(() => {
               )}
 
 
-              {/* Search */}
-              <div className="relative" ref={searchRef}>
-                <button
-                  onClick={() => setShowSearch(!showSearch)}
-                  className="p-2.5 bg-white/50 backdrop-blur-sm rounded-xl border border-white/30 text-gray-700 hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-600 hover:text-white transition-all"
-                >
-                  <Search />
-                </button>
-
-
-
-                {showSearch && (
-                  <div className="absolute right-0 top-full mt-2 w-80 z-50 animate-in slide-in-from-top-2">
-                    <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-white/30 shadow-lg p-3">
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                          <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                          </svg>
-                        </div>
-                        <input
-                          type="text"
-                          placeholder="Search for flowers..."
-                          className="w-full pl-10 pr-4 py-2 bg-white/80 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          autoFocus
-                          onKeyPress={(e) => e.key === 'Enter' && handleSearch(e)}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
               {/* Auth Button */}
               <div className="hidden sm:block">
                 {isAuthenticated ? (
@@ -241,6 +185,14 @@ useEffect(() => {
                         >
                           <User size={18} />
                           <span>Profile</span>
+                        </Link>
+
+                        <Link
+                          to="/wishlists"
+                          className="flex items-center gap-2 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition sm:hidden"
+                        >
+                          <Heart size={18} />
+                          <span>Wishlists</span>
                         </Link>
 
                         <button
@@ -282,19 +234,6 @@ useEffect(() => {
         </div>
       </nav>
 
-      {/* Desktop Navigation Links */}
-      <div className="hidden md:flex justify-center gap-1 py-3 mt-20">
-        {mainNavItems.map((item, index) => (
-          <Link
-            key={index}
-            to={item.to}
-            className="px-5 py-2 text-gray-600 hover:text-white font-medium hover:bg-gradient-to-r hover:from-pink-500 hover:to-purple-600 hover:shadow-md rounded-xl transition-all"
-          >
-            {item.label}
-          </Link>
-        ))}
-      </div>
-
       {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {isOpen && (
@@ -317,37 +256,11 @@ useEffect(() => {
             >
               <div className="overflow-y-auto h-full pb-20 px-5 py-6 space-y-3">
 
-                {/* Main Navigation */}
-                {mainNavItems.map((item, i) => (
-                  <motion.div
-                    key={i}
-                    custom={i}
-                    initial="hidden"
-                    animate="visible"
-                    variants={navItemVariants}
-                  >
-                    <NavLink
-                      to={item.to}
-                      onClick={handleClose}
-                      className="block text-lg px-4 py-3 rounded-xl text-gray-700 hover:text-white hover:bg-gradient-to-r hover:from-pink-500 hover:to-purple-600 transition-all"
-                    >
-                      {item.label}
-                    </NavLink>
-                  </motion.div>
-                ))}
-
-                <motion.div
-                  className="my-4 h-px bg-gray-200"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: mainNavItems.length * 0.05 + 0.1 }}
-                />
-
                 {/* Secondary Navigation */}
                 {secondaryNavItems.map((item, i) => (
                   <motion.div
                     key={item.name}
-                    custom={mainNavItems.length + i}
+                    custom={i}
                     initial="hidden"
                     animate="visible"
                     variants={navItemVariants}
@@ -373,7 +286,7 @@ useEffect(() => {
                     opacity: 1,
                     y: 0,
                     transition: {
-                      delay: (mainNavItems.length + secondaryNavItems.length) * 0.05 + 0.2,
+                      delay: secondaryNavItems.length * 0.05 + 0.2,
                       duration: 0.4
                     }
                   }}

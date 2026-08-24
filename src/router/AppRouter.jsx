@@ -17,6 +17,7 @@ import ResetPassword from '../pages/auth/ResetPassword';
 import CustomError from '../pages/public/CustomError';
 import AboutUs from '../pages/public/AboutUs';
 import Wishlists from '../pages/user/Wishlists';
+import UserOrders from '../pages/user/UserOrders';
 
 
 const router = createBrowserRouter([
@@ -84,10 +85,10 @@ const router = createBrowserRouter([
             path: 'wishlists',
             element: <Wishlists />
           },
-          // {
-          //   path: 'user/orders',
-          //   element: <UserOrders />,
-          // },
+          {
+            path: 'user/orders',
+            element: <UserOrders />,
+          },
           // {
           //   path: 'user/cart',
           //   element: <Cart />,

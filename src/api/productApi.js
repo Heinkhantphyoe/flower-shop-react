@@ -8,10 +8,15 @@ export const productApi = createApi({
   tagTypes: ['Products'],
   endpoints: (builder) => ({
     getProducts: builder.query({
-      query: ({ page, categoryId, stockFilterId }) => {
+      query: ({ page, categoryId, stockFilterId, name, minPrice, maxPrice, sortBy, sortOrder }) => {
         let url = `products?page=${page}`;
         if (categoryId) url += `&categoryId=${categoryId}`;
         if (stockFilterId) url += `&stockFilterId=${stockFilterId}`;
+        if (name) url += `&name=${encodeURIComponent(name)}`;
+        if (minPrice !== undefined && minPrice !== null && minPrice !== '') url += `&minPrice=${minPrice}`;
+        if (maxPrice !== undefined && maxPrice !== null && maxPrice !== '') url += `&maxPrice=${maxPrice}`;
+        if (sortBy) url += `&sortBy=${sortBy}`;
+        if (sortOrder) url += `&sortOrder=${sortOrder}`;
         return url;
       },
       providesTags: ['Products'],

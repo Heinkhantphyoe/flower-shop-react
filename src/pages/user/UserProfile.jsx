@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { User, Mail, Shield, Camera, Eye, EyeOff, MapPin } from 'lucide-react';
+import { User, Mail, Shield, Camera, Eye, EyeOff, MapPin, Package } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useGetMeQuery, useUpdateMeMutation } from '../../api/authApi';
 import { useState } from 'react';
 
@@ -149,6 +150,14 @@ export default function UserProfile() {
                 <h2 className="text-xl font-bold text-gray-800">{user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim()}</h2>
                 <p className="text-gray-500">{user.email}</p>
                 <p className="mt-2 text-sm bg-pink-50 text-pink-600 font-semibold px-3 py-1 rounded-full capitalize">{user.role || 'user'}</p>
+
+                <Link
+                    to="/user/orders"
+                    className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-xl font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                >
+                    <Package size={18} />
+                    My Orders
+                </Link>
             </motion.div>
 
             {/* Right Column: Details Form */}

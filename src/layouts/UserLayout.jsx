@@ -3,6 +3,7 @@ import { useState, useCallback } from 'react';
 import Navbar from '../components/Navbar';
 import CartDrawer from '../components/CartDrawer';
 import Chatbot from '../components/Chatbot';
+import Footer from '../components/Footer';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import { useGetCartQuery, useAddToCartMutation } from '../api/cartApi';
@@ -60,6 +61,7 @@ const UserLayout = () => {
 
       <Chatbot />
       <Outlet context={{ addToCart }} />
+      <Footer />
     </>
   );
 };
