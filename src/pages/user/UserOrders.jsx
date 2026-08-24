@@ -12,7 +12,7 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import { useGetMyOrdersQuery, useCancelOrderMutation } from "../../api/orderApi";
 import Pagination from "../../components/Pagination";
@@ -63,6 +63,8 @@ const UserOrders = () => {
   const orders = ordersData?.data?.items || [];
   const totalOrders = ordersData?.data?.totalItems || 0;
   const totalPages = ordersData?.data?.totalPages || 1;
+  const activeStatusLabel =
+    STATUS_FILTERS.find((filter) => filter.value === statusFilter)?.label || "";
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -106,10 +108,10 @@ const UserOrders = () => {
     );
   }
 
-  if (!isLoading && orders.length === 0 && totalOrders === 0) {
+  if (!isLoading && statusFilter === null && totalOrders === 0) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 mt-20">
-        <motion.div
+        <Motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           className="bg-white/80 backdrop-blur-xl p-10 rounded-3xl shadow-xl border border-gray-100 flex flex-col items-center justify-center max-w-md w-full text-center"
@@ -128,7 +130,7 @@ const UserOrders = () => {
             <ShoppingBag className="w-5 h-5" />
             Start Shopping
           </Link>
-        </motion.div>
+        </Motion.div>
       </div>
     );
   }
@@ -167,6 +169,31 @@ const UserOrders = () => {
         </div>
 
         {/* Orders List */}
+        {orders.length === 0 ? (
+          <Motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white/80 backdrop-blur-xl p-10 rounded-3xl shadow-lg border border-gray-100 flex flex-col items-center justify-center text-center max-w-md mx-auto mt-8"
+          >
+            <div className="w-20 h-20 bg-pink-50 rounded-full flex items-center justify-center mb-5">
+              <Package className="w-10 h-10 text-pink-400" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">
+              No {activeStatusLabel || "Matching"} Orders
+            </h3>
+            <p className="text-gray-500 mb-6 text-sm">
+              You don't have any {activeStatusLabel.toLowerCase() || "matching"} orders right now.
+            </p>
+            {statusFilter !== null && (
+              <button
+                onClick={() => handleFilterChange(null)}
+                className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all"
+              >
+                Show All Orders
+              </button>
+            )}
+          </Motion.div>
+        ) : (
         <div className="space-y-4">
           <AnimatePresence initial={false}>
             {orders.map((order) => {
@@ -177,7 +204,7 @@ const UserOrders = () => {
               );
 
               return (
-                <motion.div
+                <Motion.div
                   key={order.id}
                   layout
                   initial={{ opacity: 0, y: 16 }}
@@ -252,7 +279,7 @@ const UserOrders = () => {
                   {/* Expanded Details */}
                   <AnimatePresence initial={false}>
                     {isExpanded && (
-                      <motion.div
+                      <Motion.div
                         key="details"
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
@@ -377,14 +404,15 @@ const UserOrders = () => {
                             </div>
                           </div>
                         </div>
-                      </motion.div>
+                      </Motion.div>
                     )}
                   </AnimatePresence>
-                </motion.div>
+                </Motion.div>
               );
             })}
           </AnimatePresence>
         </div>
+        )}
 
         {/* Pagination */}
         {totalPages > 1 && (
@@ -399,13 +427,13 @@ const UserOrders = () => {
       {/* Cancel Confirmation Modal */}
       <AnimatePresence>
         {cancelTarget && (
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
           >
-            <motion.div
+            <Motion.div
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
@@ -449,8 +477,8 @@ const UserOrders = () => {
                   )}
                 </button>
               </div>
-            </motion.div>
-          </motion.div>
+            </Motion.div>
+          </Motion.div>
         )}
       </AnimatePresence>
     </div>

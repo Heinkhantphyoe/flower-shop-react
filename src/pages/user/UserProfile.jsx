@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 import { User, Mail, Shield, Camera, Eye, EyeOff, MapPin, Package } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useGetMeQuery, useUpdateMeMutation } from '../../api/authApi';
@@ -32,8 +32,8 @@ export default function UserProfile() {
     const initialPhone = user.phoneNumber || user.phone || "";
     const initialAddress = user.address || "";
 
-    if (isLoading) return <div className="p-10 text-center text-gray-500">Loading profile...</div>;
-    if (error) return <div className="p-10 text-center text-red-500">Failed to load profile.</div>;
+    if (isLoading) return <div className="pt-32 md:pt-28 p-10 text-center text-gray-500">Loading profile...</div>;
+    if (error) return <div className="pt-32 md:pt-28 p-10 text-center text-red-500">Failed to load profile.</div>;
 
     const handleFormChange = (e) => {
         const formTarget = e.currentTarget;
@@ -110,18 +110,18 @@ export default function UserProfile() {
     };
 
     return (
-    <motion.div 
-        className="space-y-8 p-4 md:p-8"
+    <Motion.div 
+        className="pt-32 md:pt-28 px-4 md:px-8 pb-12 space-y-8"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
     >
-        <div className="flex justify-between items-center">
-            <motion.h1 variants={itemVariants} className="text-3xl font-bold text-pink-500">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <Motion.h1 variants={itemVariants} className="text-2xl md:text-3xl font-bold text-pink-500">
                 My Profile
-            </motion.h1>
+            </Motion.h1>
             {message && (
-                <div className={`px-4 py-2 rounded-lg text-sm ${message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                <div className={`self-start px-4 py-2 rounded-lg text-sm ${message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                     {message.text}
                 </div>
             )}
@@ -129,7 +129,7 @@ export default function UserProfile() {
 
         <form onSubmit={handleSubmit} onChange={handleFormChange} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Column: Profile Card */}
-            <motion.div variants={itemVariants} className="lg:col-span-1 bg-white p-6 rounded-xl shadow-md border border-gray-100 flex flex-col items-center">
+            <Motion.div variants={itemVariants} className="lg:col-span-1 bg-white p-6 rounded-xl shadow-md border border-gray-100 flex flex-col items-center">
                 <div className="relative w-32 h-32 mb-4">
                     {(previewImage || user.profileImage || user.profileImageUrl || user.avatar?.url) ? (
                         <img
@@ -158,10 +158,10 @@ export default function UserProfile() {
                     <Package size={18} />
                     My Orders
                 </Link>
-            </motion.div>
+            </Motion.div>
 
             {/* Right Column: Details Form */}
-            <motion.div variants={itemVariants} className="lg:col-span-2 bg-white p-8 rounded-xl shadow-md border border-gray-100">
+            <Motion.div variants={itemVariants} className="lg:col-span-2 bg-white p-8 rounded-xl shadow-md border border-gray-100">
                 <div className="space-y-8">
                     {/* Personal Information Section */}
                     <div>
@@ -253,11 +253,11 @@ export default function UserProfile() {
                 </div>
 
                 {/* Save Button */}
-                <div className="mt-10 flex justify-end">
-                    <motion.button 
+                <div className="mt-10 flex sm:justify-end">
+                    <Motion.button
                         type="submit"
                         disabled={isUpdating || !hasChanges}
-                        className={`px-6 py-2.5 rounded-lg shadow-md transition-colors ${
+                        className={`w-full sm:w-auto px-6 py-2.5 rounded-lg shadow-md transition-colors ${
                             isUpdating || !hasChanges 
                             ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
                             : 'bg-pink-500 text-white hover:bg-pink-600'
@@ -266,10 +266,10 @@ export default function UserProfile() {
                         whileTap={{ scale: isUpdating || !hasChanges ? 1 : 0.95 }}
                     >
                         {isUpdating ? 'Saving...' : 'Save Changes'}
-                    </motion.button>
+                    </Motion.button>
                 </div>
-            </motion.div>
+            </Motion.div>
         </form>
-    </motion.div>
+    </Motion.div>
     );
 }
