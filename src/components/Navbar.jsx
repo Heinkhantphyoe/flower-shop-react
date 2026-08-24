@@ -75,7 +75,6 @@ useEffect(() => {
     { label: "Flowers", to: "/products?categoryId=1" },
     { label: "Gifts", to: "/products?categoryId=2" },
     { label: "Cakes", to: "/products?categoryId=3" },
-    { label: "Discounts", to: "/discounts" },
     { label: "About Us", to: "/about-us" },
   ];
   const secondaryNavItems = [

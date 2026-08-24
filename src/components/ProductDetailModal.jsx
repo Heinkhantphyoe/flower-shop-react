@@ -36,6 +36,9 @@ const ProductDetailModal = ({ isOpen, onClose, product }) => {
 
   if (!product) return null;
 
+  const hasDiscount = product.discountPrice !== null && product.discountPrice !== undefined && Number(product.discountPrice) < Number(product.price);
+  const effectivePrice = hasDiscount ? Number(product.discountPrice) : Number(product.price);
+
   const isWishlisted = wishlistData?.isInWishlist || wishlistData?.data?.isInWishlist || false;
 
   const handleToggleWishlist = async () => {
@@ -129,9 +132,14 @@ const ProductDetailModal = ({ isOpen, onClose, product }) => {
               {/* Price + Stock */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div>
-                  <div className="text-xl font-bold text-violet-700">{product.price}</div>
-                  {/* Optional offer: */}
-                  {/* <div className="text-sm line-through text-gray-400">$399.99</div> */}
+                  {hasDiscount ? (
+                    <div className="flex items-baseline gap-2">
+                      <div className="text-xl font-bold text-red-600">${effectivePrice.toFixed(2)}</div>
+                      <div className="text-sm line-through text-gray-400">${Number(product.price).toFixed(2)}</div>
+                    </div>
+                  ) : (
+                    <div className="text-xl font-bold text-violet-700">{product.price}</div>
+                  )}
                 </div>
                 <div className="inline-flex items-center gap-1 text-xs text-gray-800 bg-white/70 backdrop-blur-sm border border-gray-200 px-3 py-1 rounded-lg shadow-sm">
                   <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
@@ -142,7 +150,7 @@ const ProductDetailModal = ({ isOpen, onClose, product }) => {
 
               {/* CTA Buttons */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
-                <button onClick={() => addToCart({ id:product.id, name:product.name, price:product.price,  image: `/uploads/${product.imageUrl}`, stock: product.stock })} className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-2xl text-white font-semibold bg-gradient-to-r from-violet-600 to-indigo-600 hover:to-indigo-700 hover:scale-[1.02] active:scale-95 transition-all shadow-lg">
+                <button onClick={() => addToCart({ id:product.id, name:product.name, price:effectivePrice,  image: `/uploads/${product.imageUrl}`, stock: product.stock })} className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-2xl text-white font-semibold bg-gradient-to-r from-violet-600 to-indigo-600 hover:to-indigo-700 hover:scale-[1.02] active:scale-95 transition-all shadow-lg">
                   <ShoppingCart className="w-5 h-5" />
                   Add to Cart
                 </button>

@@ -53,6 +53,7 @@ const Products = () => {
             name={product.name}
             description={product.description}
             price={product.price}
+            discountPrice={product.discountPrice}
             stock={product.stock}
             image={`/uploads/${product.imageUrl}`}
             onQuickView={() => handleQuickView(product)}

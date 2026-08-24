@@ -40,6 +40,7 @@ export default function Product() {
         name: '',
         description: '',
         price: '',
+        discountPrice: '',
         stock: '',
         categoryId: '',
         image: null
@@ -53,13 +54,14 @@ export default function Product() {
                 name: product.name || '',
                 description: product.description || '',
                 price: product.price || '',
+                discountPrice: product.discountPrice ?? '',
                 stock: product.stock || '',
                 categoryId: product.categoryId || '',
                 image: null
             });
             setPreviewUrl(product.imageUrl ? `/uploads/${product.imageUrl}` : null);
         } else {
-            setFormData({ name: '', description: '', price: '', stock: '', categoryId: '', image: null });
+            setFormData({ name: '', description: '', price: '', discountPrice: '', stock: '', categoryId: '', image: null });
             setPreviewUrl(null);
         }
         setIsModalOpen(true);
@@ -88,6 +90,7 @@ export default function Product() {
             data.append('name', formData.name);
             data.append('description', formData.description);
             data.append('price', formData.price);
+            data.append('discountPrice', formData.discountPrice);
             data.append('stock', formData.stock);
             data.append('categoryId', formData.categoryId);
             if (formData.image) {
@@ -216,7 +219,16 @@ export default function Product() {
                                         </div>
                                     </td>
                                     <td className="p-4 text-gray-600">{p.categoryName}</td>
-                                    <td className="p-4 text-gray-800 font-medium">${p.price.toFixed(2)}</td>
+                                    <td className="p-4 text-gray-800 font-medium">
+                                        {p.discountPrice != null && Number(p.discountPrice) < Number(p.price) ? (
+                                            <div className="flex items-baseline gap-2">
+                                                <span className="text-red-600">${Number(p.discountPrice).toFixed(2)}</span>
+                                                <span className="text-gray-400 line-through text-sm">${Number(p.price).toFixed(2)}</span>
+                                            </div>
+                                        ) : (
+                                            `$${p.price.toFixed(2)}`
+                                        )}
+                                    </td>
                                     <td className="p-4 text-gray-600">
                                         <div className="flex items-center space-x-2">
                                             {p.stock <= 10 && p.stock > 0 && <span className="h-2 w-2 rounded-full bg-yellow-500"></span>}
@@ -283,6 +295,7 @@ export default function Product() {
                                             {categories.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}
                                         </select>
                                         <input type="number" name="price" placeholder="Price" value={formData.price} onChange={handleInputChange} className="w-full p-2 border rounded-md" required />
+                                        <input type="number" name="discountPrice" step="0.01" min="0" placeholder="Discount Price (optional)" value={formData.discountPrice} onChange={handleInputChange} className="w-full p-2 border rounded-md" />
                                         <input type="number" name="stock" placeholder="Stock" value={formData.stock} onChange={handleInputChange} className="w-full p-2 border rounded-md" required />
                                     </div>
                                     <div className="space-y-4">

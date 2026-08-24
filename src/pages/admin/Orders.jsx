@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Eye, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Eye, X, ChevronLeft, ChevronRight, Ticket, PlusCircle, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { useGetOrdersQuery, useUpdateOrderStatusMutation } from '../../api/orderApi';
+import { useGetCouponsQuery, useAddCouponMutation, useUpdateCouponMutation, useDeleteCouponMutation } from '../../api/couponApi';
 import { toast } from 'react-toastify';
 
 const ORDERS_PER_PAGE = 5;
@@ -10,6 +11,125 @@ const ORDERS_PER_PAGE = 5;
 const pageVariants = { initial: { opacity: 0, y: 20 }, in: { opacity: 1, y: 0 }, out: { opacity: 0, y: -20 } };
 const modalBackdropVariants = { hidden: { opacity: 0 }, visible: { opacity: 1 } };
 const modalPanelVariants = { hidden: { scale: 0.9, opacity: 0 }, visible: { scale: 1, opacity: 1, transition: { duration: 0.3 } } };
+
+// Fixed-amount discount coupons, managed here instead of a separate page/route
+function CouponsPanel() {
+    const [open, setOpen] = useState(false);
+    const { data: couponsData, isLoading } = useGetCouponsQuery(undefined, { skip: !open });
+    const coupons = Array.isArray(couponsData?.data) ? couponsData.data : [];
+    const [addCoupon] = useAddCouponMutation();
+    const [updateCoupon] = useUpdateCouponMutation();
+    const [deleteCoupon] = useDeleteCouponMutation();
+    const [form, setForm] = useState({ code: '', amount: '', expiresAt: '' });
+
+    const handleInputChange = (e) => {
+        setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    };
+
+    const handleAdd = async () => {
+        if (!form.code.trim() || !form.amount) {
+            toast.error('Coupon code and amount are required');
+            return;
+        }
+        try {
+            // datetime-local gives "YYYY-MM-DDTHH:mm"; backend LocalDateTime needs seconds appended
+            await addCoupon({
+                code: form.code.trim(),
+                amount: Number(form.amount),
+                ...(form.expiresAt && { expiresAt: `${form.expiresAt}:00` }),
+            }).unwrap();
+            toast.success('Coupon created successfully!');
+            setForm({ code: '', amount: '', expiresAt: '' });
+        } catch (err) {
+            console.error('Failed to create coupon:', err);
+            toast.error(err?.data?.message || 'Failed to create coupon');
+        }
+    };
+
+    const toggleActive = async (coupon) => {
+        try {
+            await updateCoupon({ id: coupon.id, active: !coupon.active }).unwrap();
+            toast.success(`Coupon ${coupon.active ? 'deactivated' : 'activated'}`);
+        } catch (err) {
+            toast.error(err?.data?.message || 'Failed to update coupon');
+        }
+    };
+
+    const handleDelete = async (id) => {
+        try {
+            await deleteCoupon(id).unwrap();
+            toast.success('Coupon deleted');
+        } catch (err) {
+            toast.error(err?.data?.message || 'Failed to delete coupon');
+        }
+    };
+
+    return (
+        <div className="bg-white rounded-xl shadow-md border border-gray-100">
+            <button onClick={() => setOpen(o => !o)} className="w-full flex items-center justify-between p-4 text-left">
+                <span className="flex items-center gap-2 font-semibold text-gray-800">
+                    <Ticket size={20} className="text-pink-500" />
+                    Discount Coupons
+                    <span className="text-xs font-normal text-gray-500">(fixed amount off the order subtotal)</span>
+                </span>
+                {open ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+            </button>
+
+            {open && (
+                <div className="p-4 pt-0 space-y-4">
+                    {/* Add Coupon */}
+                    <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                        <input type="text" name="code" placeholder="CODE e.g. SAVE5" value={form.code} onChange={handleInputChange} className="border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-pink-400 uppercase" />
+                        <input type="number" name="amount" step="0.01" min="0" placeholder="Amount ($)" value={form.amount} onChange={handleInputChange} className="border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-pink-400" />
+                        <input type="datetime-local" name="expiresAt" value={form.expiresAt} onChange={handleInputChange} className="border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-pink-400 text-gray-600" />
+                        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={handleAdd} className="flex items-center justify-center bg-pink-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-pink-600 transition-colors whitespace-nowrap">
+                            <PlusCircle size={18} />
+                            Add
+                        </motion.button>
+                    </div>
+
+                    {/* Coupons Table */}
+                    {isLoading ? (
+                        <div className="p-4 text-center text-gray-500">Loading coupons...</div>
+                    ) : coupons.length === 0 ? (
+                        <div className="p-4 text-center text-gray-500">No coupons yet</div>
+                    ) : (
+                        <table className="w-full text-left">
+                            <thead className="border-b border-gray-200 bg-gray-50">
+                                <tr>
+                                    {['Code', 'Amount', 'Status', 'Expires At', 'Used', 'Actions'].map(h => <th key={h} className="p-3 text-sm font-semibold text-gray-500">{h}</th>)}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {coupons.map((c) => (
+                                    <tr key={c.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
+                                        <td className="p-3 font-mono font-semibold text-pink-600">{c.code}</td>
+                                        <td className="p-3 text-gray-800">${Number(c.amount).toFixed(2)}</td>
+                                        <td className="p-3">
+                                            <span className={`px-2 py-1 text-xs font-semibold rounded-full ${c.active ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'}`}>
+                                                {c.active ? 'Active' : 'Inactive'}
+                                            </span>
+                                        </td>
+                                        <td className="p-3 text-gray-600">{c.expiresAt ? new Date(c.expiresAt).toLocaleString() : 'No expiry'}</td>
+                                        <td className="p-3 text-gray-600">{c.usedCount}</td>
+                                        <td className="p-3">
+                                            <div className="flex items-center space-x-2">
+                                                <button onClick={() => toggleActive(c)} className="px-2 py-1 text-xs rounded-md border border-gray-300 hover:bg-gray-100 transition-colors">
+                                                    {c.active ? 'Deactivate' : 'Activate'}
+                                                </button>
+                                                <button onClick={() => handleDelete(c.id)} className="p-2 text-red-500 hover:bg-red-100 rounded-full transition-colors"><Trash2 size={16} /></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+}
 
 
 export default function Orders() {
@@ -90,6 +210,9 @@ export default function Orders() {
     return (
         <motion.div initial="initial" animate="in" exit="out" variants={pageVariants} transition={{ duration: 0.5 }} className="space-y-6">
             <h1 className="text-3xl font-bold text-gray-800">Manage Orders</h1>
+
+            {/* Discount Coupons */}
+            <CouponsPanel />
 
             {/* Filters Section */}
             <div className="bg-white p-4 rounded-xl shadow-md border border-gray-100 flex flex-col sm:flex-row gap-4">

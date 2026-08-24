@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
-import { X, Trash2, Minus, Plus, MoveUpRight } from "lucide-react";
+import { X, Trash2, Minus, Plus, MoveUpRight, TicketPercent } from "lucide-react";
 import { toast } from "react-toastify";
 import { useClearCartMutation, useRemoveCartItemMutation, useUpdateCartItemMutation } from "../api/cartApi";
+import { useApplyCouponMutation } from "../api/couponApi";
 import { useState } from "react";
 import { useCreateOrderMutation } from "../api/orderApi";
 
@@ -16,6 +17,28 @@ const CartDrawer = ({
     const total = cartItems
         .reduce((sum, item) => sum + item.price * item.quantity, 0)
         .toFixed(2);
+
+    // Coupon state (fixed amount off the subtotal; server re-validates on order placement)
+    const [couponInput, setCouponInput] = useState('');
+    const [appliedCoupon, setAppliedCoupon] = useState(null);
+    const [applyCoupon, { isLoading: isApplyingCoupon }] = useApplyCouponMutation();
+    const couponDiscount = appliedCoupon ? Math.min(appliedCoupon.discountAmount, parseFloat(total)) : 0;
+
+    const handleApplyCoupon = async () => {
+        if (!couponInput.trim()) {
+            toast.warn('Enter a coupon code first');
+            return;
+        }
+        try {
+            const res = await applyCoupon({ code: couponInput.trim(), subtotal: parseFloat(total) }).unwrap();
+            const data = res?.data || res;
+            setAppliedCoupon({ code: data.code, discountAmount: Number(data.discountAmount) });
+            toast.success(`Coupon ${data.code} applied: -$${Number(data.discountAmount).toFixed(2)}`);
+        } catch (error) {
+            setAppliedCoupon(null);
+            toast.error(error?.data?.message || 'Invalid or expired coupon');
+        }
+    };
 
     const [updateCartItem] = useUpdateCartItemMutation();
     const [removeCartItem] = useRemoveCartItemMutation();
@@ -101,6 +124,9 @@ const CartDrawer = ({
         formDataToSend.append("city", formData.city);
         formDataToSend.append("zipCode", formData.zipCode);
         formDataToSend.append("deliveryNotes", formData.deliveryNote);
+        if (appliedCoupon) {
+            formDataToSend.append("couponCode", appliedCoupon.code);
+        }
 
         cartItems.forEach((item, index) => {            
             formDataToSend.append(`orderItems[${index}].productId`, item.productId);
@@ -122,6 +148,8 @@ const CartDrawer = ({
             });
             setPaymentImage(null);
             setPaymentPreview(null);
+            setCouponInput('');
+            setAppliedCoupon(null);
         } catch (error) {
             toast.error(error?.data?.message || 'Failed to place order');
         }
@@ -436,13 +464,51 @@ const CartDrawer = ({
                                                     <span className="text-gray-600">Subtotal</span>
                                                     <span className="font-medium">${total}</span>
                                                 </div>
+                                                {/* Coupon code */}
+                                                {appliedCoupon ? (
+                                                    <div className="flex items-center justify-between text-sm bg-green-50 border border-green-200 rounded-lg px-2 py-1.5">
+                                                        <span className="text-green-700 font-medium flex items-center gap-1">
+                                                            <TicketPercent size={14} />
+                                                            {appliedCoupon.code}
+                                                        </span>
+                                                        <button
+                                                            onClick={() => setAppliedCoupon(null)}
+                                                            className="text-xs text-red-500 hover:text-red-700"
+                                                        >
+                                                            Remove
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex gap-2">
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Coupon code"
+                                                            value={couponInput}
+                                                            onChange={(e) => setCouponInput(e.target.value)}
+                                                            className="flex-1 border border-rose-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-rose-300 text-sm uppercase"
+                                                        />
+                                                        <button
+                                                            onClick={handleApplyCoupon}
+                                                            disabled={isApplyingCoupon || !couponInput.trim()}
+                                                            className="px-3 py-1.5 rounded-lg bg-gray-800 text-white text-sm font-semibold hover:bg-black transition disabled:opacity-50 whitespace-nowrap"
+                                                        >
+                                                            {isApplyingCoupon ? '...' : 'Apply'}
+                                                        </button>
+                                                    </div>
+                                                )}
+                                                {appliedCoupon && (
+                                                    <div className="flex justify-between text-sm">
+                                                        <span className="text-green-600">Discount</span>
+                                                        <span className="font-medium text-green-600">-${couponDiscount.toFixed(2)}</span>
+                                                    </div>
+                                                )}
                                                 <div className="flex justify-between text-sm">
                                                     <span className="text-gray-600">Shipping</span>
                                                     <span className="font-medium">$5.00</span>
                                                 </div>
                                                 <div className="flex justify-between text-lg font-semibold pt-2">
                                                     <span className="text-gray-700">Total</span>
-                                                    <span className="text-pink-600">${(parseFloat(total) + 5).toFixed(2)}</span>
+                                                    <span className="text-pink-600">${(parseFloat(total) - couponDiscount + 5).toFixed(2)}</span>
                                                 </div>
                                             </div>
 

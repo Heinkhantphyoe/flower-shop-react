@@ -7,6 +7,7 @@ const ProductCard = ({
   id,
   name = "Premium Wireless Headphones",
   price = "$299.99",
+  discountPrice = null,
   image = notFoundImage,
   isNew = false,
   category = "",
@@ -17,6 +18,9 @@ const ProductCard = ({
   const [isHovered, setIsHovered] = useState(false);
 
   const { addToCart } = useOutletContext();
+
+  const hasDiscount = discountPrice !== null && discountPrice !== undefined && Number(discountPrice) < Number(price);
+  const effectivePrice = hasDiscount ? Number(discountPrice) : Number(price);
 
 
   if (loading) {
@@ -57,6 +61,15 @@ const ProductCard = ({
           </div>
         )}
 
+        {/* Sale Badge */}
+        {hasDiscount && (
+          <div className="absolute top-3 right-3">
+            <div className="text-xs bg-red-500 text-white px-2.5 py-1 rounded-full shadow-lg">
+              Sale
+            </div>
+          </div>
+        )}
+
         {/* Action Buttons */}
         <div className="absolute bottom-3 right-3 flex flex-row gap-2">
           <button
@@ -66,7 +79,7 @@ const ProductCard = ({
             <Eye className="w-4 h-4" />
           </button>
           <button
-            onClick={(e) => {e.stopPropagation(); addToCart({ id, name, price, image, stock })}}
+            onClick={(e) => {e.stopPropagation(); addToCart({ id, name, price: effectivePrice, image, stock })}}
             className="p-2 bg-white/90 rounded-full shadow-lg hover:bg-white transition-all duration-300 transform hover:scale-110 opacity-0 group-hover:opacity-100"
           >
             <ShoppingCart className="w-4 h-4" />
@@ -94,7 +107,14 @@ const ProductCard = ({
 
 
         <div className="pt-2">
-          <span className="text-lg font-bold text-gray-900">{price}</span>
+          {hasDiscount ? (
+            <div className="flex items-baseline gap-2">
+              <span className="text-lg font-bold text-red-600">${effectivePrice.toFixed(2)}</span>
+              <span className="text-sm text-gray-400 line-through">${Number(price).toFixed(2)}</span>
+            </div>
+          ) : (
+            <span className="text-lg font-bold text-gray-900">{price}</span>
+          )}
         </div>
       </div>
     </div>
