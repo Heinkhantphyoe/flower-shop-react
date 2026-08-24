@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import { useState, useCallback } from 'react';
 import Navbar from '../components/Navbar';
 import CartDrawer from '../components/CartDrawer';
+import Chatbot from '../components/Chatbot';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import { useGetCartQuery, useAddToCartMutation } from '../api/cartApi';
@@ -57,6 +58,7 @@ const UserLayout = () => {
         isLoading={isLoading}
       />
 
+      <Chatbot />
       <Outlet context={{ addToCart }} />
     </>
   );

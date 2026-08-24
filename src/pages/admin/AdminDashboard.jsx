@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Bell, User, LogOut, Flower, Menu, X, BarChart3, Package, Users, Tag, LayoutDashboard } from "lucide-react";
 import Product from "./Product";
 import Orders from "./Orders";
@@ -9,6 +9,7 @@ import Category from "./Category";
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDispatch } from "react-redux";
 import { logout } from "../../redux/authSlice";
+import { useGetMeQuery } from "../../api/authApi";
 
 // --- Page Components Mapping (for cleaner rendering) ---
 const pages = {
@@ -36,6 +37,8 @@ export default function AdminDashboard() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
     const dispatch = useDispatch();
+    const { data: userResponse } = useGetMeQuery();
+    const user = userResponse?.data || null;
 
 
     // Effect to close dropdown on outside click
@@ -127,9 +130,12 @@ export default function AdminDashboard() {
                         
                         <div className="relative">
                             <img
-                                src="https://i.pravatar.cc/40"
+                                src={
+                                    user?.profileImageUrl ? `/uploads/${user.profileImageUrl}` :
+                                    `https://ui-avatars.com/api/?name=${user?.name || 'Admin'}&background=random`
+                                }
                                 alt="Admin Avatar"
-                                className="w-10 h-10 rounded-full border-2 border-white cursor-pointer shadow-sm"
+                                className="w-10 h-10 rounded-full border-2 border-white cursor-pointer shadow-sm object-cover"
                                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                             />
                             <AnimatePresence>
@@ -143,8 +149,8 @@ export default function AdminDashboard() {
                                     >
                                         <div className="p-2">
                                             <div className="px-2 py-2 mb-1">
-                                                <p className="font-semibold text-slate-800">Admin User</p>
-                                                <p className="text-sm text-slate-500 truncate">admin@flowerstore.com</p>
+                                                <p className="font-semibold text-slate-800">{user?.name || 'Admin User'}</p>
+                                                <p className="text-sm text-slate-500 truncate">{user?.email || 'admin@flowerstore.com'}</p>
                                             </div>
                                             <div className="border-t border-slate-200"></div>
                                             <button onClick={() => { setCurrentPage('profile'); setIsDropdownOpen(false); }} className="flex items-center w-full text-left mt-1 px-2 py-2 text-sm text-slate-700 hover:bg-slate-100 rounded-md transition-colors"><User size={16} className="mr-2" /> My Profile</button>
