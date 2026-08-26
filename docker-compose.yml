@@ -1,0 +1,13 @@
+services:
+  frontend:
+    build:
+      context: .
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8080/api}
+    image: flower-shop-frontend
+    container_name: flowershop-frontend
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    volumes:
+      - ./public/uploads:/usr/share/nginx/html/uploads:ro
+    restart: unless-stopped
