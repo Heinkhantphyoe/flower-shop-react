@@ -27,6 +27,27 @@ export const authApi = createApi({
         }
       },
     }),
+    googleLogin: builder.mutation({
+      query: ({ token }) => ({
+        url: '/auth/google',
+        method: 'POST',
+        body: { token },
+      }),
+      transformResponse: (response, meta, arg) => {
+        if (response.success && response.data.accessToken) {
+          const user = {
+            token: response.data.accessToken,
+            refreshToken: response.data.refreshToken,
+            role: response.data.role,
+            email: arg.email,
+            isAuthenticated: true,
+          };
+          return user;
+        } else {
+          throw new Error(response.message || 'Google login failed');
+        }
+      },
+    }),
     register: builder.mutation({
       query: (formData) => ({
         url: '/auth/register',
@@ -82,6 +103,7 @@ export const authApi = createApi({
 
 export const {
   useLoginMutation,
+  useGoogleLoginMutation,
   useRegisterMutation,
   useVerifyOtpMutation,
   useForgotPasswordMutation,

@@ -131,7 +131,7 @@ export default function AdminDashboard() {
                         <div className="relative">
                             <img
                                 src={
-                                    user?.profileImageUrl ? `/uploads/${user.profileImageUrl}` :
+                                    user?.profileImageUrl ? (user.profileImageUrl.startsWith('http') ? user.profileImageUrl : `/uploads/${user.profileImageUrl}`) :
                                     `https://ui-avatars.com/api/?name=${user?.name || 'Admin'}&background=random`
                                 }
                                 alt="Admin Avatar"

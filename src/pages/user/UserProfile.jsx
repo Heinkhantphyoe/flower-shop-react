@@ -133,7 +133,7 @@ export default function UserProfile() {
                 <div className="relative w-32 h-32 mb-4">
                     {(previewImage || user.profileImage || user.profileImageUrl || user.avatar?.url) ? (
                         <img
-                            src={previewImage || (user.profileImageUrl ? `/uploads/${user.profileImageUrl}` : null) || (user.profileImage ? `/uploads/${user.profileImage}` : null) || user.avatar?.url}
+                            src={previewImage || (user.profileImageUrl ? (user.profileImageUrl.startsWith('http') ? user.profileImageUrl : `/uploads/${user.profileImageUrl}`) : null) || (user.profileImage ? `/uploads/${user.profileImage}` : null) || user.avatar?.url}
                             alt="User Avatar"
                             className="w-full h-full rounded-full object-cover border-4 border-pink-100"
                         />

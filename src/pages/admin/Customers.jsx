@@ -80,7 +80,7 @@ export default function Customers() {
                             ) : customers.length === 0 ? (
                                 <tr><td colSpan="6" className="text-center p-8 text-gray-500">No customers found.</td></tr>
                             ) : customers.map((c) => {
-                                const avatar = c.profileImageUrl ? `/uploads/${c.profileImageUrl}` : `https://ui-avatars.com/api/?name=${c.email || 'U'}`;
+                                const avatar = c.profileImageUrl ? (c.profileImageUrl.startsWith('http') ? c.profileImageUrl : `/uploads/${c.profileImageUrl}`) : `https://ui-avatars.com/api/?name=${c.email || 'U'}`;
                                 const name = c.name || 'Unknown User';
                                 return (
                                     <tr key={c.customerId} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">

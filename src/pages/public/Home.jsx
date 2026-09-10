@@ -199,7 +199,7 @@ const Home = () => {
               {heroSlides[currentSlide].accent}
             </Motion.div>
 
-            <h1 className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-pink-200 to-violet-200 tracking-tight leading-tight">
+            <h1 className="text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-pink-200 to-violet-200 tracking-tight leading-tight">
               {heroSlides[currentSlide].title}
               <br />
               <span className="text-4xl md:text-6xl">{heroSlides[currentSlide].subtitle}</span>
