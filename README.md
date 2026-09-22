@@ -108,7 +108,7 @@ VITE_API_BASE_URL=http://localhost:8080/api
 
 ### 3. Start the backend
 
-The frontend expects the [FlowerShop Backend](../flowershop/) API to be running. See the backend README for PostgreSQL, Redis, and `.env` setup.
+The frontend expects the [FlowerShop Backend](https://github.com/Heinkhantphyoe/flower-shop) API to be running. See the backend README for PostgreSQL, Redis, and `.env` setup.
 
 ### 4. Start the dev server
 
